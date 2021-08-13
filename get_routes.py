@@ -27,7 +27,7 @@ def get_routes(latitude: str, longitude: str) -> Dict:
        coordinates."""
     params = {"apikey": KEY, "in": f"{latitude},{longitude}"}
     response = requests.get(STATIONS_URL, params=params)
-    return response.json()
+    return response.json()['boards'][0]['departures']
 
 
 def prettify_time(time: str) -> str:
@@ -63,6 +63,6 @@ def collect_route_information(data: List) -> Dict:
 
     
 lat, long = get_lat_and_long('Fredericksburg VA')
-route_data = get_routes(lat, long)['boards'][0]['departures']
+route_data = get_routes(lat, long)
 organized_route_data = collect_route_information(route_data)
 print(organized_route_data)
