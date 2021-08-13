@@ -44,6 +44,11 @@ def prettify_time(time: str) -> str:
 
 
 def collect_route_information(data: List) -> Dict:
+    """Takes in the pertinent route information such as
+       departure time, destination, mode of transportation,
+       and transportation website, if applicable. Returns
+       a defaultdict with a list of the information above,
+       with its key set to a number, as in 'Route #1', etc."""
     result = defaultdict(list)
     i = 0
 
