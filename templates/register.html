@@ -11,16 +11,30 @@
           crossorigin="anonymous"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
-    <title>Rides Near Me - Home</title>
+    <title>Ride Finder - Home</title>
 {% endblock %}
 {% block content %}
     <div class="info">
-        <h1>Welcome to Rides Near Me!</h1>
+        <h1>Welcome to Ride Finder!</h1>
         <p>Find a public transit route near you.
             Rides are for either buses or trains, and you will get 
             information about upcoming departure times, mode of transportation,
             and destination. Fill out the form to sign up today!
         </p>
     </div>
-    <div class="signup"></div>
+    <div class="signup">
+        <h2>Sign up Today!</h2>
+        <form action="/" method="POST">
+            {{ form.hidden_tag() }}
+            {% for field in form if field.widget.input_type != 'hidden' %}
+                {{field.label}}
+                {{field}}
+            
+            {% for error in field.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+            {% endfor %}
+            <button class="btn" type="submit">Register</button>
+        </form>
+    </div>
 {% endblock %}
