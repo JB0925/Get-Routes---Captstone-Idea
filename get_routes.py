@@ -61,8 +61,10 @@ def collect_route_information(data: List) -> Dict:
         i += 1
     return result
 
-    
-lat, long = get_lat_and_long('Fredericksburg VA')
-route_data = get_routes(lat, long)
-organized_route_data = collect_route_information(route_data)
-print(organized_route_data)
+
+def get_route_data(address):
+    """A wrapper to collect the data from the above functions,
+       so that only one function is called to get route information."""
+    lat, long = get_lat_and_long(address)
+    route_data = get_routes(lat, long)
+    return collect_route_information(route_data)

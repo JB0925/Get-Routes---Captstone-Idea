@@ -1,8 +1,9 @@
 from decouple import config
 from flask import Flask, redirect, render_template, url_for, session, request
 
-from forms import RegistrationForm, LoginForm
+from forms import RegistrationForm, LoginForm, RouteSearchForm
 from models import db, connect_db, User, Search
+from get_routes import get_route_data
 
 app = Flask(__name__)
 
@@ -55,4 +56,13 @@ def login():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search_routes():
-    return render_template('search.html')
+    form = RouteSearchForm()
+
+    return render_template('search.html', form=form)
+
+
+@app.route('/logout')
+def logout():
+    if "username" in session:
+        session.pop("username")
+    return redirect(url_for('login'))

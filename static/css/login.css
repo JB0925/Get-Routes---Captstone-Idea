@@ -33,6 +33,7 @@ form {
     border-radius: 5px;
     padding: 25px;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    z-index: 1;
 }
 
 input {
@@ -67,5 +68,48 @@ label {
 }
 
 .photos img {
+    margin-top: 3%;
     margin-right: 100px;
+    width: 100%;
+}
+
+@media screen and (max-width: 900px) {
+    main {
+        flex-direction: column;
+    }
+
+    .photos {
+        padding-bottom: 250px;
+        z-index: 1;
+        margin-right: 0;
+        width: 100%;
+    }
+
+    .login {
+        width: 100%;
+    }
+
+    form {
+        align-self: flex-start;
+    }
+
+    body {
+        position: relative;
+    }
+
+    nav ul {
+        display: none;
+    }
+
+    #burger {
+        display: visible;
+        color: #042A84;
+        font-size: 2rem;
+        margin-left: auto;
+        margin-right: 30px;
+    }
+
+    .hide {
+        display: visible;
+    }
 }
