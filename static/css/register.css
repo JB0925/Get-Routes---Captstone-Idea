@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    margin-left: 3%;
+    margin-left: 3.5%;
     margin-top: 0;
     width: 50%;
 }
@@ -28,14 +28,14 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-right: 6.15%;
+    margin-right: 7.15%;
     width: 50%;
     margin-top: 1%;
 }
 
 .signup h2 {
     color: #042A84;
-    margin-right: 19%;
+    margin-right: 21%;
 }
 
 form {
@@ -43,6 +43,11 @@ form {
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
+    border: 1px solid #042A84;
+    border-radius: 5px;
+    padding: 25px;
+    margin-left: 7.5%;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 input {
@@ -71,3 +76,50 @@ label {
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
+@media screen and (max-width: 900px) {
+    main {
+        flex-direction: column;
+    }
+
+    .signup {
+        padding-bottom: 180px;
+        z-index: 1;
+        margin-right: 0;
+        width: 100%;
+    }
+
+    .signup h2 {
+        margin-right: 0;
+        margin-left: 3%;
+        align-self: flex-start;
+    }
+
+    .info {
+        width: 100%;
+    }
+
+    form {
+        align-self: flex-start;
+        margin-left: 3%;
+    }
+
+    body {
+        position: relative;
+    }
+
+    nav ul {
+        display: none;
+    }
+
+    #burger {
+        display: visible;
+        color: #042A84;
+        font-size: 2rem;
+        margin-left: auto;
+        margin-right: 30px;
+    }
+
+    .hide {
+        display: visible;
+    }
+}

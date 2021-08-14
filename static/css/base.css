@@ -52,6 +52,10 @@ nav img {
     margin-left: 3%;
 }
 
+#burger {
+    color: white;
+}
+
 .drawline {
     position: relative;
 }
@@ -98,4 +102,52 @@ main {
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
+}
+
+.bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding-top: 100px;
+}
+
+.pulldown {
+    height: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    transition: height 1s ease-in-out;
+}
+
+.pulldown a {
+    color: #042A84;
+    text-decoration: none;
+    font-size: 1.5rem;
+}
+
+.pulldown h2 {
+    display: none;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    margin-left: 4%;
+}
+
+.pulldown button {
+    display: none;
+    opacity: 0;
+    padding: 12px 10px;
+    width: 160px;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #042A84;
+    color: white;
+    border: .5px solid #042A84;
+    transition: opacity 1s ease-in-out;
+    margin-left: 4%;
+}
+
+#github, #linkedin{
+    font-size: 2rem;
 }

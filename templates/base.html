@@ -17,19 +17,31 @@
     <nav>
         <img src="{{ url_for('static', filename='img/ride_finder_logo.png') }}" alt="">
         <ul>
+            <a href="https://github.com/JB0925"><i id="github" class="fab fa-github"></i></a>
+            <a href="https://github.com/JB0925"><i id="linkedin" class="fab fa-linkedin-in"></i></a>
             <li><a class="drawline" href="/">Register</a></li>
             <li><a class="drawline" href="#">Contact</a></li>
             <li><a class="drawline" href="#">About</a></li>
         </ul>
+        <i id="burger" class="fas fa-bars"></i>
     </nav>
+    <div class="pulldown">
+        <h2><a href="/login">Login</a></h2>
+        <h2><a href="/register">Register</a></h2>
+        <h2><a href="#">Contact</a></h2>
+        <button>Start Free Trial</button>
+    </div>
     <main>
         {% block content %}
         {% endblock %}
     </main>
-    <div class="custom-shape-divider-bottom-1628882305">
-        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-            <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" class="shape-fill"></path>
-        </svg>
+    <div class="bottom">
+        <div class="custom-shape-divider-bottom-1628882305">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" class="shape-fill"></path>
+            </svg>
+        </div>
     </div>
+    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
 </body>
 </html>
