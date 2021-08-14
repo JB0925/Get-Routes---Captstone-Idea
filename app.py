@@ -1,7 +1,7 @@
 from decouple import config
-from flask import Flask, redirect, render_template, url_for, session
+from flask import Flask, redirect, render_template, url_for, session, request
 
-from forms import RegistrationForm
+from forms import RegistrationForm, LoginForm
 from models import db, connect_db, User, Search
 
 app = Flask(__name__)
@@ -30,3 +30,29 @@ def signup():
         session['username'] = username
 
     return render_template('register.html', form=form)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Method used to render the login page and login
+       an existing user."""
+    form = LoginForm()
+
+    if request.method == 'GET':
+        if "username" not in session:
+            return render_template('login.html', form=form)
+        return redirect(url_for('search_routes'))
+    
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        user = User.authenticate(username, password)
+        if user:
+            session['username'] = username
+            return redirect(url_for('search_routes'))
+    return redirect(url_for('signup'))
+
+
+@app.route('/search', methods=['GET', 'POST'])
+def search_routes():
+    return render_template('search.html')

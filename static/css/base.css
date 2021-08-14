@@ -151,3 +151,8 @@ main {
 #github, #linkedin{
     font-size: 2rem;
 }
+
+.error {
+    color: red;
+    font-size: 1.2rem;
+}

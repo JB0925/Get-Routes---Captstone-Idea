@@ -1,41 +1,27 @@
-.info {
+.login {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
     margin-left: 3.5%;
     margin-top: 0;
-    width: 50%;
+    width: 45%;
 }
 
-.info h1, p {
+.login h2, p {
     color: #042A84;
 }
 
-.info h1 {
+.login h2 {
     font-size: 3rem;
     font-weight: 900;
+    margin-bottom: 0%;
 }
 
-.info p {
+.login p {
     line-height: 1.8rem;
     font-size: 1.2rem;
     width: 80%;
-}
-
-.signup {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-right: 7.15%;
-    width: 50%;
-    margin-top: 1%;
-}
-
-.signup h2 {
-    color: #042A84;
-    margin-right: 15%;
 }
 
 form {
@@ -46,7 +32,6 @@ form {
     border: 1px solid #042A84;
     border-radius: 5px;
     padding: 25px;
-    margin-left: -1%;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
@@ -76,50 +61,11 @@ label {
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
-@media screen and (max-width: 900px) {
-    main {
-        flex-direction: column;
-    }
+.photos {
+    display: flex;
+    width: 55%;
+}
 
-    .signup {
-        padding-bottom: 180px;
-        z-index: 1;
-        margin-right: 0;
-        width: 100%;
-    }
-
-    .signup h2 {
-        margin-right: 0;
-        margin-left: 3%;
-        align-self: flex-start;
-    }
-
-    .info {
-        width: 100%;
-    }
-
-    form {
-        align-self: flex-start;
-        margin-left: 3%;
-    }
-
-    body {
-        position: relative;
-    }
-
-    nav ul {
-        display: none;
-    }
-
-    #burger {
-        display: visible;
-        color: #042A84;
-        font-size: 2rem;
-        margin-left: auto;
-        margin-right: 30px;
-    }
-
-    .hide {
-        display: visible;
-    }
+.photos img {
+    margin-right: 100px;
 }
