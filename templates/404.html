@@ -10,27 +10,17 @@
           integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" 
           crossorigin="anonymous"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
-    <title>Ride Finder - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/404.css') }}">
+    <title>404 - Not Found</title>
 {% endblock %}
 {% block content %}
-    <div class="login">
-        <h2>Sign in to your account.</h2>
-        <p>...and get where you need to go.</p>
-        <form action="/login" method="POST">
-            {{ form.hidden_tag() }}
-            {% for field in form if field.widget.input_type != 'hidden' %}
-                {{field.label}}
-                {{field}}
-            
-            {% for error in field.errors %}
-                <p class="error">{{ error }}</p>
-            {% endfor %}
-            {% endfor %}
-            <button class="btn" type="submit">Login</button>
-        </form>
-    </div>
-    <div class="photos">
-        <img src="{{ url_for('static', filename='img/bus_stop.png') }}" alt="">
+    <div class="container">
+        <h1>We're Sorry!</h1>
+        <p>The data you requested could not be found.
+            Click below to return to the search page if you
+            are not redirected after three seconds.
+        </p>
+        <button><a href="/search">Return to Users</a></button>
+        <meta http-equiv="refresh" content="3; /search">
     </div>
 {% endblock %}

@@ -16,7 +16,8 @@
 {% block content %}
     <div class="login">
         <h2>Search for routes near you.</h2>
-        <p>Route data is currently restricted to the United States.</p>
+        <p>Route data can be found for locations in the United States,
+            as well as some locations outside of the United States.</p>
         <form action="/search" method="POST">
             {{ form.hidden_tag() }}
             {% for field in form if field.widget.input_type != 'hidden' %}
@@ -27,7 +28,7 @@
                 <p class="error">{{ error }}</p>
             {% endfor %}
             {% endfor %}
-            <button class="btn" type="submit">Register</button>
+            <button class="btn" type="submit">Search</button>
         </form>
     </div>
     <div class="photos">

@@ -38,6 +38,6 @@ class RouteSearchForm(FlaskForm):
                         validators=[DataRequired()],
                         render_kw={'placeholder': 'Ex: Boston'})
     
-    state = StringField('Enter Your State',
+    state = StringField('Enter Your State/Country',
                         validators=[DataRequired()],
                         render_kw={'placeholder': 'Ex: Massachusetts'})
