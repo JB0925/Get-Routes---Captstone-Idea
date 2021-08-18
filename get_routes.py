@@ -30,14 +30,16 @@ def get_lat_and_long(search: str) -> Tuple:
         return None
 
 
-def get_routes(latitude: str, longitude: str) -> Dict:
+def _get_routes_and_stations(latitude: str, longitude: str) -> Dict:
     """Gets route information, including departure times
        and destinations for the given longitude and latitude
        coordinates."""
+    if not latitude and not longitude:
+        return
     params = {"apikey": KEY, "in": f"{latitude},{longitude}"}
     response = requests.get(STATIONS_URL, params=params)
     try:
-        return response.json()['boards'][0]['departures']
+        return response.json()['boards']
     except IndexError:
         return None
 
@@ -51,9 +53,9 @@ def prettify_time(time: str) -> str:
     hour = time.hour if len(str(time.hour)) == 2 else f'0{time.hour}'
 
     if time.minute < 10:
-        pretty_time = f'{time.year}-{time.month}-{time.day}  @{hour}:0{minute}'
+        pretty_time = f'{time.year}-{time.month}-{time.day} @{hour}:{minute}'
     else:
-        pretty_time = f'{time.year}-{time.month}-{time.day}  @{hour}:{minute}'
+        pretty_time = f'{time.year}-{time.month}-{time.day} @{hour}:{minute}'
     return f'{pretty_time} AM' if time.hour < 12 else f'{pretty_time} PM'
 
 
@@ -68,18 +70,45 @@ def collect_route_information(data: List) -> Dict:
 
     try:
         for item in data:
-            time = prettify_time(item['time'])
-            result[i].append(time)
-            result[i].append(item['transport']['mode'])
-            result[i].append(item['transport']['headsign'])
-            result[i].append(item['agency']['website'])
+            for route in item['departures']:
+                route_ = route['transport']
+                long_name = route_.get('longName')
+                if long_name:
+                    if long_name == route_['name']:
+                        long_name = route_['headsign']
+                
+                if not long_name:
+                    long_name = route_['headsign']
+                temp = []
+                time = prettify_time(route['time'])
+                temp.append(time)
+                temp.append(route_['mode'])
+                temp.append(route_['name'])
+                temp.append(route_['headsign'])
+                temp.append(long_name)
+                temp.append(route['agency']['website'])
+                result[i].append(temp)
             i += 1
         return result
     except TypeError:
         return None
 
 
-def get_route_data(address):
+def get_station_data(data: List) -> Dict:
+    """Gets station data from available route data."""
+    stations = {}
+    i = 0
+    for item in data:
+        temp = []
+        temp.append(item['place']['name'])
+        temp.append(item['place']['location']['lat'])
+        temp.append(item['place']['location']['lng'])
+        stations[i] = temp
+        i += 1
+    return stations
+
+
+def get_route_data(address: str) -> Dict:
     """A wrapper to collect the data from the above functions,
        so that only one function is called to get route information."""
     try:
@@ -87,5 +116,5 @@ def get_route_data(address):
     except TypeError:
         return None
     
-    route_data = get_routes(lat, long)
+    route_data = _get_routes_and_stations(lat, long)
     return collect_route_information(route_data)

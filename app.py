@@ -1,12 +1,9 @@
-from datetime import time
-import json
-
 from decouple import config
-from flask import Flask, redirect, render_template, url_for, session, request
+from flask import Flask, json, redirect, render_template, url_for, session, request, jsonify
 
 from forms import RegistrationForm, LoginForm, RouteSearchForm
 from models import db, connect_db, User, Search
-from get_routes import get_route_data, create_search_string
+from get_routes import get_lat_and_long, get_route_data, create_search_string, get_station_data, _get_routes_and_stations
 
 app = Flask(__name__)
 
@@ -17,6 +14,14 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 connect_db(app)
 db.create_all()
 
+# global variables used to send data on client-side requests
+coords = []
+destination_coords = []
+lat_and_lng = {}
+stations = {}
+city_and_state = {'address': None}
+MAP_ARRAY = ['map', 'hybrid', 'satellite', 'dark', 'light']
+LIMIT = -5
 
 @app.route('/', methods=['GET', 'POST'])
 def signup():
@@ -45,7 +50,7 @@ def login():
     if request.method == 'GET':
         if "username" not in session:
             return render_template('login.html', form=form)
-        return redirect(url_for('search_routes'))
+        return redirect(url_for('search_stations'))
     
     if form.validate_on_submit():
         username = form.username.data
@@ -53,57 +58,125 @@ def login():
         user = User.authenticate(username, password)
         if user:
             session['username'] = username
-            return redirect(url_for('search_routes'))
+            return redirect(url_for('search_stations'))
     return redirect(url_for('signup'))
 
 
 @app.route('/search', methods=['GET', 'POST'])
-def search_routes():
+def search_stations():
+    """Method used to locate public transit stations within a 
+       500 meter radius of the address given by the user."""
+    global stations
+    global coords
+    global lat_and_lng
+    global city_and_state
     form = RouteSearchForm()
 
     if form.validate_on_submit():
-        length = 0
         street_address = form.street_address.data
         city = form.city.data
         state = form.state.data
         full_address = create_search_string(city, state, street_address)
-        route_data = get_route_data(full_address)
+        coords = get_route_data(full_address)
+        city_and_state['address'] = f'{city}, {state.upper()}'
+        try:
+            lat, lng = get_lat_and_long(full_address)
+        except TypeError:
+            return redirect(url_for('search_stations'))
+        lat_and_lng["latitude"] = lat
+        lat_and_lng["longitude"] = lng
+
+        # gets data about stations and then packages it into an easier to read format
+        station_data = _get_routes_and_stations(lat,lng)
+        stations = get_station_data(station_data)
         
-        if route_data:
-            user = User.query.filter_by(username=session["username"]).first()
-            for key in route_data:
-                length += 1
-                new_route = Search(time=route_data[key][0], transportation_mode=route_data[key][1],
-                                        destination=route_data[key][2], website=route_data[key][3], user_id=user.id)
-                db.session.add(new_route)
-                db.session.commit()
-            return redirect(url_for('show_results', length=length))
+        if station_data:
+            return redirect(url_for('show_station_results'))
         return redirect(url_for('not_found'))
     
+    # handles any GET requests based on whether the user is logged in or not
     if "username" in session:
         return render_template('search.html', form=form)
     return redirect(url_for('login'))
 
 
 @app.route('/search/results')
-def show_results():
-    user = User.query.filter_by(username=session['username']).first()
-    print(user.searches)
-    length = request.args.get('length')
-    if not length:
-        return redirect(url_for('search_routes'))
-    length = int(length)
-    routes = Search.query.all()[-length:]
-    return render_template('results.html', routes=routes)
+def show_station_results():
+    """Renders the page to show transit stations located near
+       the address the user gave. Passes the global stations
+       variable to the template, as well as an array used to
+       give each map an id (used in rendering the maps)."""
+    global stations
+    return render_template('station_results.html', routes=stations, maps=MAP_ARRAY)
+
+
+@app.route('/stations/<idx>/routes')
+def show_route_results(idx):
+    """Shows a list of all routes and their relevant information,
+       as well as setting data to be used in a client-side call
+       that is used to render the maps."""
+    global coords
+    idx = int(idx)
+
+    # handling GET requests and edge cases.
+    if "username" not in session:
+        return redirect(url_for('signup'))
+    if idx < 0 or idx > 4:
+        return redirect(url_for('search_stations'))
+    if not coords:
+        return redirect(url_for('search_stations'))
+    
+    routes = coords[idx]
+    names = []
+    user = User.query.filter_by(username=session["username"]).first()
+    for key in routes:
+        names.append(key[2])
+        destination_coords.append(get_lat_and_long(f'{key[2]} {city_and_state["address"]}'))
+        new_route = Search(time=key[0], transportation_mode=key[1],
+                                destination=key[4], website=key[5], user_id=user.id)
+        db.session.add(new_route)
+        db.session.commit()
+    
+    available_routes = Search.query.all()[LIMIT:]
+    return render_template('route_results.html',routes=available_routes, maps=MAP_ARRAY, names=names)
+
+
+@app.route('/get_coords')
+def get_coords():
+    """A route used by the client-side to get data
+       about the stations that will allow maps to 
+       be rendered."""
+    return jsonify(stations)
+
+
+@app.route('/get_routes')
+def get_routes():
+    """A route used by the client-side to get data
+       about the routes for a selected station. It
+       also gives the client-side the data that allows
+       the maps to be rendered."""
+    global lat_and_lng
+    global city_and_state
+    global destination_coords
+    routes = [r.serialize for r in Search.query.all()[-5:]]
+
+    routes.append(lat_and_lng)
+    routes.append(city_and_state)
+    routes.append(destination_coords)
+    destination_coords = []
+    return jsonify(routes)
 
 
 @app.route('/404')
 def not_found():
+    """A page used when a user types in information
+    for which there is no match."""
     return render_template('404.html')
 
 
 @app.route('/logout')
 def logout():
+    """Handles logging out a user."""
     if "username" in session:
         session.pop("username")
     return redirect(url_for('login'))

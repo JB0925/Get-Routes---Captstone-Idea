@@ -55,3 +55,15 @@ class Search(db.Model):
     destination = db.Column(db.String)
     website = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), nullable=False)
+
+
+    @property
+    def serialize(self):
+        """Method used to serialize a Search object so that 
+        it can be returned as JSON data to the client-side."""
+        return {
+            "time": self.time,
+            "mode": self.transportation_mode,
+            "destination": self.destination,
+            "website": self.website,
+        }

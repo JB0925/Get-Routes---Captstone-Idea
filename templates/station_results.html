@@ -9,22 +9,29 @@
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" 
           integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" 
           crossorigin="anonymous"/>
+    <script src="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.css"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}">
     <title>Ride Finder - Results</title>
 {% endblock %}
 {% block content %}
     <div class="container">
-        <h1>We've found rides near you!</h1>
+        <h1>We've found stations near you!</h1>
         <div class="results">
             {% for route in routes %}
-                <div class="route">
-                    <h2><b>Destination:</b> {{ route['destination'] }}</h2>
-                    <p><b>Departure Time:</b> {{ route['time'] }}</p>
-                    <p><b>Type:</b> {{ route['transportation_mode'] }}</p>
-                    <p><b>Website:</b><a href="#"> {{ route['website'] }}</a></p>
+                <div class="route-container">
+                    <div id="{{maps[loop.index0]}}" class="map"></div>
+                    <div class="route">
+                        <h2><a href="/stations/{{loop.index0}}/routes"><b>Station:</b> {{ routes[route][0] }}</a></h2>
+                        <p><em>Click the station above to view details about upcoming routes.</em></p>
+                    </div>
                 </div>
             {% endfor %}
         </div>
     </div>
+{% block script %}
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="{{ url_for('static', filename='js/station_results.js') }}"></script>
+{% endblock %}
 {% endblock %}

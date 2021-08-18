@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block head %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" 
+          integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" 
+          crossorigin="anonymous"/>
+    <script src="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/route_results.css') }}">
+    <title>Ride Finder - Results</title>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <h1>Here are the upcoming routes at the station you selected:</h1>
+        <div id="map" class="map"></div>
+        <div class="results">
+            {% for route in routes %}
+                <div class="route-container">
+                    <div class="route">
+                        <h2><b>Destination:</b> {{ route['destination'] }}</a></h2>
+                        <p><b>Departure Time:</b> {{ route['time'] }}</p>
+                        <p><b>Type:</b> {{ route['transportation_mode'] }}</p>
+                        <p><b>Name / Number:</b> {{ names[loop.index0] }}</p>
+                        <p><b>Website:</b><a href="{{ route['website'] }}"> {{ route['website'] }}</a></p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% block script %}
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="{{ url_for('static', filename='js/route_results.js') }}"></script>
+{% endblock %}
+{% endblock %}
