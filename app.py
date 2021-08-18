@@ -37,7 +37,10 @@ def signup():
         db.session.add(user)
         db.session.commit()
         session['username'] = username
+        return redirect(url_for('search_stations'))
 
+    if "username" in session:
+        return redirect(url_for('search_stations'))
     return render_template('register.html', form=form)
 
 

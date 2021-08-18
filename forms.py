@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField
+from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired, Length, Optional
 
 
@@ -9,7 +9,7 @@ class RegistrationForm(FlaskForm):
                 validators=[DataRequired(), Length(min=5, max=25)], 
                 render_kw={'placeholder': "Username"})
     
-    password = StringField('Enter A Password', 
+    password = PasswordField('Enter A Password', 
                 validators=[DataRequired(), Length(min=8, max=50)],
                 render_kw={'placeholder': 'Password'})
     
@@ -23,7 +23,7 @@ class LoginForm(FlaskForm):
                 validators=[DataRequired(), Length(min=5, max=25)], 
                 render_kw={'placeholder': "Username"})
     
-    password = StringField('Enter A Password', 
+    password = PasswordField('Enter A Password', 
                 validators=[DataRequired(), Length(min=8, max=50)],
                 render_kw={'placeholder': 'Password'})
 
