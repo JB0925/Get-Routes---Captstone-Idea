@@ -30,7 +30,8 @@ class MakeSingleMap {
         for (let i = 0; i < destination_coords.length-1; i++) {
             let [lat, lng] = [...destination_coords[i]]
             let stop_type = routes[i].mode === 'bus' ? 'bus stop' : 'train station';
-            let full_address = `${routes[i].destination} ${stop_type} ${address}`;
+            let full_address = routes[i].mode === 'bus' ? `${routes[i].destination} ${stop_type} ${address}` :
+                                                            `${routes[i].destination} ${stop_type}`;
             console.log(full_address)
             console.log(lat, lng)
             L.mapquest.directions().route({
