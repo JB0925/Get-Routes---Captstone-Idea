@@ -85,7 +85,7 @@ def search_stations():
         try:
             lat, lng = get_lat_and_long(full_address)
         except TypeError:
-            return redirect(url_for('search_stations'))
+            return redirect(url_for('not_found'))
         lat_and_lng["latitude"] = lat
         lat_and_lng["longitude"] = lng
 
