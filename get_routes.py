@@ -6,7 +6,7 @@ from dateutil.parser import parse
 from decouple import config
 
 
-KEY = config('API_KEY')
+KEY = config('HERE_API_KEY')
 STATIONS_URL = 'https://transit.hereapi.com/v8/departures'
 GEOCODE_URL = 'https://geocoder.ls.hereapi.com/6.2/geocode.json?apiKey={key}&searchtext={search}'
 
