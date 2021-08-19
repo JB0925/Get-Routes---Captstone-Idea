@@ -81,12 +81,9 @@ def collect_route_information(data: List) -> Dict:
                     long_name = route_['headsign']
                 temp = []
                 time = prettify_time(route['time'])
-                temp.append(time)
-                temp.append(route_['mode'])
-                temp.append(route_['name'])
-                temp.append(route_['headsign'])
-                temp.append(long_name)
-                temp.append(route['agency']['website'])
+                route_data = [time, route_['mode'], route_['name'], 
+                                route_['headsign'], long_name, route['agency']['website']]
+                temp.extend(route_data)
                 result[i].append(temp)
             i += 1
         return result
