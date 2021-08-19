@@ -73,6 +73,11 @@ label {
     width: 100%;
 }
 
+.success {
+    color: green;
+    font-size: 1.2rem;
+}
+
 @media screen and (max-width: 900px) {
     body {
         overflow-x: hidden;

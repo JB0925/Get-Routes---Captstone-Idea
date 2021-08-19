@@ -11,7 +11,7 @@ STATIONS_URL = 'https://transit.hereapi.com/v8/departures'
 GEOCODE_URL = 'https://geocoder.ls.hereapi.com/6.2/geocode.json?apiKey={key}&searchtext={search}'
 
 
-def create_search_string(city: str, state: str, street_address: str = None) -> str:
+def create_search_string_for_station_search(city: str, state: str, street_address: str = None) -> str:
     if not street_address:
         return f'{city} {state}'
     return f'{street_address} {city} {state}'
@@ -115,3 +115,21 @@ def get_route_data(address: str) -> Dict:
     
     route_data = _get_routes_and_stations(lat, long)
     return collect_route_information(route_data)
+
+
+def create_correct_destination_coordinates(data: List, address: Dict, origin_coords: Dict) -> Tuple:
+    """A method to generate the correct coordinates (or a close estimation) for a destination
+    based on factors such as transportation mode, etc. Accounts for situations in which addresses
+    are formed and no coordinates are found by simply returning the origin coordinates."""
+    start_coords = (origin_coords['latitude'], origin_coords['longitude'])
+    if data[1] == 'bus' or data[1] == 'subway':
+        destination_coords = get_lat_and_long(f'{data[3]} bus stop {address["address"]}') or start_coords
+        if abs(destination_coords[0] - origin_coords['latitude']) > 1.5:
+            return start_coords
+        else:
+            return destination_coords
+    
+    train_coords = get_lat_and_long(data[3])
+    return train_coords if train_coords else start_coords
+
+

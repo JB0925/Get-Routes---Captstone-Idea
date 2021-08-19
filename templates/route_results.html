@@ -18,6 +18,9 @@
 {% block content %}
     <div class="container">
         <h1>Here are the upcoming routes at the station you selected:</h1>
+        <p>The green marker represents the station you selected, or starting point.
+            The red markers represent a rough estimate of the destination of the route.
+        </p>
         <div id="map" class="map"></div>
         <div class="results">
             {% for route in routes %}

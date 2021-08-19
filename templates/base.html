@@ -19,16 +19,26 @@
         <ul>
             <a href="https://github.com/JB0925"><i id="github" class="fab fa-github"></i></a>
             <a href="https://www.linkedin.com/in/jesse-brink-0682/"><i id="linkedin" class="fab fa-linkedin-in"></i></a>
-            <li><a class="drawline" href="/">Register</a></li>
-            <li><a class="drawline" href="/login">Login</a></li>
-            <li><a class="drawline" href="/search">Search</a></li>
+            {% if session["username"] %}
+                <li><a class="drawline" href="/search">Search</a></li>
+                <li><a class="drawline" href="/logout">Logout</a></li>
+            {% else %}
+                <li><a class="drawline" href="/">Register</a></li>
+                <li><a class="drawline" href="/login">Login</a></li>
+            {% endif %}
+            <li><a class="drawline" href="/about">About</a></li>
         </ul>
         <i id="burger" class="fas fa-bars"></i>
     </nav>
     <div class="pulldown">
-        <h2><a href="/login">Login</a></h2>
-        <h2><a href="/">Register</a></h2>
-        <h2><a href="#">Contact</a></h2>
+        {% if session["username"] %}
+            <h2><a class="drawline" href="/search">Search</a></h2>
+            <h2><a class="drawline" href="/logout">Logout</a></h2>
+        {% else %}
+            <h2><a href="/">Register</a></h2>
+            <h2><a href="/login">Login</a></h2>
+        {% endif %}
+        <h2><a class="drawline" href="/about">About</a></h2>
         <button>Start Free Trial</button>
     </div>
     <main>

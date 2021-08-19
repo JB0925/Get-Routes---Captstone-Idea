@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block head %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" 
+          integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" 
+          crossorigin="anonymous"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
+    <title>Ride Finder - About</title>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="about-info">
+            <h2>About the App:</h2>
+            <p>This project is my first capstone for the Springboard Software
+                Engineering Program. It aims to find public transit routes within a 500
+                meter circular radius of an address that a user gives. From there, it finds 
+                stations that are located within that 500 meter radius (if any). If you click
+                a station, it will render a map of the next five departures from that station, 
+                as well as give some information about each departure. The map, while fairly
+                accurate, is not intended to be read as the exact location of the stop. Rather,
+                it will give you a general idea as to where the route would take you.
+            </p>
+        </div>
+        <div class="madewith">
+            <h2>This app was created with:</h2>
+            <div class="image-container">
+                <img src="../static/img/html5.png" alt="HTML 5">
+                <img src="../static/img/css3.png" alt="CSS 3">
+                <img src="../static/img/js.png" alt="JS">
+                <img src="..//static/img/python.png" alt="Python">
+                <img src="../static/img/flask.png" alt="Flask">
+                <img class="img-lg" src="../static/img/postgres.png" alt="PostgreSQL">
+            </div>
+        </div>
+    </div>
+{% endblock %}

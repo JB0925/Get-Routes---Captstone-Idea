@@ -1,9 +1,10 @@
 from decouple import config
-from flask import Flask, json, redirect, render_template, url_for, session, request, jsonify
+from flask import Flask, redirect, render_template, url_for, session, request, jsonify, flash
 
 from forms import RegistrationForm, LoginForm, RouteSearchForm
 from models import db, connect_db, User, Search
-from get_routes import get_lat_and_long, get_route_data, create_search_string, get_station_data, _get_routes_and_stations
+from get_routes import create_correct_destination_coordinates, create_search_string_for_station_search, get_lat_and_long, get_route_data, \
+                        get_station_data, _get_routes_and_stations
 
 app = Flask(__name__)
 
@@ -79,7 +80,7 @@ def search_stations():
         street_address = form.street_address.data
         city = form.city.data
         state = form.state.data
-        full_address = create_search_string(city, state, street_address)
+        full_address = create_search_string_for_station_search(city, state, street_address)
         coords = get_route_data(full_address)
         city_and_state['address'] = f'{city}, {state.upper()}'
         try:
@@ -134,7 +135,8 @@ def show_route_results(idx):
     user = User.query.filter_by(username=session["username"]).first()
     for key in routes:
         names.append(key[2])
-        destination_coords.append(get_lat_and_long(f'{key[2]} {city_and_state["address"]}'))
+        new_destination_coords = create_correct_destination_coordinates(key, city_and_state, lat_and_lng)
+        destination_coords.append(new_destination_coords)
         new_route = Search(time=key[0], transportation_mode=key[1],
                                 destination=key[4], website=key[5], user_id=user.id)
         db.session.add(new_route)
@@ -170,6 +172,11 @@ def get_routes():
     return jsonify(routes)
 
 
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+
 @app.route('/404')
 def not_found():
     """A page used when a user types in information
@@ -182,4 +189,5 @@ def logout():
     """Handles logging out a user."""
     if "username" in session:
         session.pop("username")
+    flash('You were successfully logged out!')
     return redirect(url_for('login'))
