@@ -174,6 +174,8 @@ def get_routes():
 
 @app.route('/about')
 def about():
+    """A page solely used to display the purpose
+    of the app and the technologies used to create it."""
     return render_template('about.html')
 
 
