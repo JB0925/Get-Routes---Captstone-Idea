@@ -41,3 +41,24 @@ class RouteSearchForm(FlaskForm):
     state = StringField('Enter Your State/Country',
                         validators=[DataRequired()],
                         render_kw={'placeholder': 'Ex: Massachusetts'})
+
+
+class ResetPasswordForm(FlaskForm):
+    """The form used to reset a user's password."""
+    temp_password = PasswordField('Enter the temporary password.',
+                                    validators=[DataRequired()],
+                                    render_kw={'placeholder': "Temporary Password"})
+    
+    new_password = PasswordField('Enter your new password',
+                                    validators=[DataRequired()],
+                                    render_kw={'placeholder': 'Enter your new password.'})
+
+
+class GetEmailForm(FlaskForm):
+    """The form used to get an email address to see if there is
+    a match with a user. This is then used to send an email to reset
+    the user's password."""
+
+    email = StringField('Enter your email address',
+                            validators=[DataRequired()],
+                            render_kw={'placeholder': 'Email address'})

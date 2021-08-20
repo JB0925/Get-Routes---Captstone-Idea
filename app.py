@@ -1,10 +1,12 @@
 from decouple import config
 from flask import Flask, redirect, render_template, url_for, session, request, jsonify, flash
+from flask_bcrypt import Bcrypt
 
-from forms import RegistrationForm, LoginForm, RouteSearchForm
+from forms import GetEmailForm, RegistrationForm, LoginForm, ResetPasswordForm, RouteSearchForm
 from models import db, connect_db, User, Search
 from get_routes import create_correct_destination_coordinates, create_search_string_for_station_search, get_lat_and_long, get_route_data, \
                         get_station_data, _get_routes_and_stations
+from sms import send
 
 app = Flask(__name__)
 
@@ -21,6 +23,7 @@ destination_coords = []
 lat_and_lng = {}
 stations = {}
 city_and_state = {'address': None}
+user_email = None
 MAP_ARRAY = ['map', 'hybrid', 'satellite', 'dark', 'light']
 LIMIT = -5
 
@@ -38,6 +41,7 @@ def signup():
         db.session.add(user)
         db.session.commit()
         session['username'] = username
+        flash('Your registration was successful!')
         return redirect(url_for('search_stations'))
 
     if "username" in session:
@@ -49,6 +53,7 @@ def signup():
 def login():
     """Method used to render the login page and login
        an existing user."""
+    
     form = LoginForm()
 
     if request.method == 'GET':
@@ -177,6 +182,53 @@ def about():
     """A page solely used to display the purpose
     of the app and the technologies used to create it."""
     return render_template('about.html')
+
+
+@app.route('/reset/email', methods=['GET', 'POST'])
+def check_email():
+    """A page used to ensure that a logged out user 
+    has an account on the website."""
+    form = GetEmailForm()
+    dummy_pw = config('TEMP_PW')
+    
+    if form.validate_on_submit():
+        global user_email
+        user_email = form.email.data
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            msg = f"Thank you for contacting Ride Finder.\
+                Your temporary password is {dummy_pw}.\
+            - The Ride Finder Team"
+            send(msg, user.email)
+            return redirect(url_for('reset_password', email=form.email.data))
+
+        flash('Sorry, your email is not associated with an account!')
+        return redirect(url_for('signup'))
+
+    return render_template('reset_get_email.html', form=form)
+
+
+@app.route('/reset', methods=['GET', 'POST'])
+def reset_password():
+    dummy_pw = config('TEMP_PW')
+    form = ResetPasswordForm()
+    
+    if form.validate_on_submit():
+        temp_pw = form.temp_password.data
+        if temp_pw == dummy_pw:
+            global user_email
+            bcrypt = Bcrypt()
+            new_hashed_pw = bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
+            user = User.query.filter_by(email=user_email).first()
+            user.password = new_hashed_pw
+            db.session.add(user)
+            db.session.commit()
+            flash('Your password was successfully reset!')
+        else:
+            flash('Sorry, the temporary password you entered was incorrect. Please request another email to reset it.')
+        return redirect(url_for('login'))
+    
+    return render_template('reset.html', form=form)
 
 
 @app.route('/404')

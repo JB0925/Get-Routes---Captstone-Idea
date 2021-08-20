@@ -15,6 +15,13 @@
 {% endblock %}
 {% block content %}
     <div class="login">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <p class="success">{{ msg }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <h2>Search for stations near you.</h2>
         <p>Station data can be found for locations in the United States,
             as well as some locations outside of the United States.</p>
@@ -32,6 +39,7 @@
         </form>
     </div>
     <div class="photos">
-        <img src="{{ url_for('static', filename='img/bus_stop.png') }}" alt="">
+        <img src="{{ url_for('static', filename='img/bus_stop.png') }}" alt="Bus Stop">
     </div>
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 {% endblock %}

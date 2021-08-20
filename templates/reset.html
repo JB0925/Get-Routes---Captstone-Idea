@@ -15,16 +15,11 @@
 {% endblock %}
 {% block content %}
     <div class="login">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for msg in messages %}
-                    <p class="success">{{ msg }}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        <h2>Sign in to your account.</h2>
-        <p>...and get where you need to go.</p>
-        <form action="/login" method="POST">
+        <h2>Reset your password.</h2>
+        <p>An email has been sent to the address associated with your account.
+            Please input the temporary password, then create a permanent one.
+        </p>
+        <form action="/reset" method="POST">
             {{ form.hidden_tag() }}
             {% for field in form if field.widget.input_type != 'hidden' %}
                 {{field.label}}
@@ -35,7 +30,6 @@
             {% endfor %}
             {% endfor %}
             <button class="btn" type="submit">Login</button>
-            <a class="forgot-pwd" href="/reset/email">Forgot Your Password?</a>
         </form>
     </div>
     <div class="photos">

@@ -10,21 +10,13 @@
           integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" 
           crossorigin="anonymous"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reset_get_email.css') }}">
     <title>Ride Finder - Home</title>
 {% endblock %}
 {% block content %}
-    <div class="login">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for msg in messages %}
-                    <p class="success">{{ msg }}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        <h2>Sign in to your account.</h2>
-        <p>...and get where you need to go.</p>
-        <form action="/login" method="POST">
+    <div class="container">
+        <p>Please enter the email address associated with your account.</p>
+        <form action="/reset/email" method="POST">
             {{ form.hidden_tag() }}
             {% for field in form if field.widget.input_type != 'hidden' %}
                 {{field.label}}
@@ -35,10 +27,6 @@
             {% endfor %}
             {% endfor %}
             <button class="btn" type="submit">Login</button>
-            <a class="forgot-pwd" href="/reset/email">Forgot Your Password?</a>
         </form>
-    </div>
-    <div class="photos">
-        <img src="{{ url_for('static', filename='img/bus_stop.png') }}" alt="">
     </div>
 {% endblock %}

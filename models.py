@@ -20,9 +20,13 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
-    email = db.Column(db.String, unique=True)
+    email = db.Column(db.String, unique=True, nullable=False)
 
     searches = db.relationship('Search', backref='user')
+
+
+    def __str__(self):
+        return f'User(username={self.username}, password={self.password}, email={self.email}'
 
 
     @classmethod
