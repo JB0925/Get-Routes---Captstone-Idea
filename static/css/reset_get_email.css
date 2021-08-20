@@ -1,38 +1,38 @@
 .container {
+    align-items: center;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
     width: 100%;
 }
 
 .container p {
-    text-align: center;
-    line-height: 1.8rem;
-    font-size: 1.2rem;
     color: #042A84;
+    font-size: 1.2rem;
+    line-height: 1.8rem;
+    text-align: center;
     width: 100%;
 }
 
 form {
+    align-items: flex-start;
+    border-radius: 5px;
+    border: 1px solid #042A84;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     justify-content: center;
-    border: 1px solid #042A84;
-    border-radius: 5px;
     padding: 25px;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     z-index: 1;
 }
 
 input {
-    margin-bottom: 10px;
-    height: 30px;
-    width: 80%;
     border-radius: 5px;
-    padding: 5px;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    height: 30px;
+    margin-bottom: 10px;
+    padding: 5px;
+    width: 80%;
 }
 
 label {
@@ -42,17 +42,18 @@ label {
 }
 
 .btn {
-    margin-top: 10px;
+    background-image: linear-gradient(to right, #f1ba87, #FE902B);
     border-radius: 5px;
     border: 1px solid #FFA553;
-    background-image: linear-gradient(to right, #f1ba87, #FE902B);
-    height: 35px;
-    width: 40%;
-    color: white;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    color: white;
+    height: 35px;
+    margin-top: 10px;
+    width: 40%;
 }
 
 @media screen and (max-width: 900px) {
+    
     .container {
         padding-bottom: 349px;
     }
@@ -62,9 +63,9 @@ label {
     }
 
     body {
-        position: relative;
         overflow-x: hidden;
         overflow-y: hidden;
+        position: relative;
     }
 
     nav ul {
@@ -72,8 +73,8 @@ label {
     }
 
     #burger {
-        display: visible;
         color: #042A84;
+        display: visible;
         font-size: 2rem;
         margin-left: auto;
         margin-right: 30px;

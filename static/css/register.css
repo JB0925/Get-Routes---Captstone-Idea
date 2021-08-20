@@ -1,7 +1,7 @@
 .info {
+    align-items: flex-start;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     justify-content: center;
     margin-left: 3.5%;
     margin-top: 0;
@@ -18,19 +18,19 @@
 }
 
 .info p {
-    line-height: 1.8rem;
     font-size: 1.2rem;
+    line-height: 1.8rem;
     width: 80%;
 }
 
 .signup {
+    align-items: center;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
     margin-right: 7.15%;
-    width: 50%;
     margin-top: 1%;
+    width: 50%;
 }
 
 .signup h2 {
@@ -39,25 +39,25 @@
 }
 
 form {
+    align-items: flex-start;
+    border-radius: 5px;
+    border: 1px solid #042A84;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     justify-content: center;
-    border: 1px solid #042A84;
-    border-radius: 5px;
-    padding: 25px;
     margin-left: -3%;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    padding: 25px;
     z-index: 1;
 }
 
 input {
-    margin-bottom: 10px;
-    height: 30px;
-    width: 80%;
     border-radius: 5px;
-    padding: 5px;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    height: 30px;
+    margin-bottom: 10px;
+    padding: 5px;
+    width: 80%;
 }
 
 label {
@@ -67,32 +67,33 @@ label {
 }
 
 .btn {
-    margin-top: 10px;
+    background-image: linear-gradient(to right, #f1ba87, #FE902B);
     border-radius: 5px;
     border: 1px solid #FFA553;
-    background-image: linear-gradient(to right, #f1ba87, #FE902B);
-    height: 35px;
-    width: 40%;
-    color: white;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    color: white;
+    height: 35px;
+    margin-top: 10px;
+    width: 40%;
 }
 
 @media screen and (max-width: 900px) {
+    
     main {
         flex-direction: column;
     }
 
     .signup {
-        padding-bottom: 180px;
-        z-index: 1;
         margin-right: 0;
+        padding-bottom: 180px;
         width: 100%;
+        z-index: 1;
     }
 
     .signup h2 {
-        margin-right: 0;
-        margin-left: 3%;
         align-self: flex-start;
+        margin-left: 3%;
+        margin-right: 0;
     }
 
     .info {
@@ -113,8 +114,8 @@ label {
     }
 
     #burger {
-        display: visible;
         color: #042A84;
+        display: visible;
         font-size: 2rem;
         margin-left: auto;
         margin-right: 30px;

@@ -1,12 +1,12 @@
 body {
-    position: relative;
     height: auto;
+    position: relative;
 }
 
 .container {
+    align-items: flex-start;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     justify-content: center;
 }
 
@@ -16,38 +16,38 @@ body {
 }
 
 .results {
-    display: flex;
     align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     padding-bottom: 200px;
 }
 
 .route-container {
-    display: flex;
-    width: 100%;
     border: 1px solid #042A84;
+    display: flex;
     padding: 25px;
+    width: 100%;
     z-index: 1;
 }
 
 .route {
+    border-radius: 5px;
+    border: 1px solid #042A84;
     display: flex;
     flex-direction: column;
-    padding: 25px;
-    border: 1px solid #042A84;
-    border-radius: 5px;
     margin: 10px;
-    z-index: 1;
+    padding: 25px;
     width: 50%;
+    z-index: 1;
 }
 
 .map {
     height: 300px;
-    width: 50%;
-    margin: 10px;
     margin-right: 0;
+    margin: 10px;
+    width: 50%;
 }
 
 .route h2 {
@@ -59,18 +59,19 @@ body {
 }
 
 .route a {
-    text-decoration: none;
     color: #042A84;
+    text-decoration: none;
 }
 
 @media screen and (max-width: 900px) {
+    
     nav ul {
         display: none;
     }
 
     #burger {
-        display: visible;
         color: #042A84;
+        display: visible;
         font-size: 2rem;
         margin-left: auto;
         margin-right: 30px;

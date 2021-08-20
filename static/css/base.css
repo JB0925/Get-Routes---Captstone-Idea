@@ -17,11 +17,11 @@ body {
 }
 
 nav {
-    position: relative;
-    display: flex;
     align-items: center;
-    justify-content: flex-start;
     border-bottom: .5px solid lightgray;
+    display: flex;
+    justify-content: flex-start;
+    position: relative;
 }
 
 .nav-svg {
@@ -40,16 +40,16 @@ nav li {
 }
 
 nav a {
-    text-decoration: none;
-    font-size: 1.3rem;
     color: #042A84;
+    font-size: 1.3rem;
     margin-right: 100px;
+    text-decoration: none;
 }
 
 nav img {
     height: 125px;
-    width: 125px;
     margin-left: 3%;
+    width: 125px;
 }
 
 #burger {
@@ -61,15 +61,15 @@ nav img {
 }
 
 .drawline:before {
-    content: "";
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: 0;
-    left: 0;
     background-color: #042A84;
-    visibility: hidden;
+    bottom: 0;
+    content: "";
+    height: 2px;
+    left: 0;
+    position: absolute;
     transition: all 0.3s ease-in-out;
+    visibility: hidden;
+    width: 0;
 }
 
 .drawline:hover:before {
@@ -78,20 +78,20 @@ nav img {
 }
 
 .custom-shape-divider-bottom-1628882305 {
-    position: absolute;
     bottom: 0;
     left: 0;
-    width: 100%;
-    overflow: hidden;
     line-height: 0;
+    overflow: hidden;
+    position: absolute;
+    width: 100%;
 }
 
 .custom-shape-divider-bottom-1628882305 svg {
-    position: relative;
     display: block;
-    width: calc(100% + 1.3px);
     height: 238px;
+    position: relative;
     transform: rotateY(180deg);
+    width: calc(100% + 1.3px);
 }
 
 .custom-shape-divider-bottom-1628882305 .shape-fill {
@@ -99,53 +99,53 @@ nav img {
 }
 
 main {
-    display: flex;
     align-items: flex-start;
+    display: flex;
     justify-content: flex-start;
 }
 
 .bottom {
-    position: absolute;
     bottom: 0;
     left: 0;
-    width: 100%;
     padding-top: 100px;
+    position: absolute;
+    width: 100%;
 }
 
 .pulldown {
-    height: 0px;
+    align-items: flex-start;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    height: 0px;
     justify-content: center;
     transition: height 1s ease-in-out;
 }
 
 .pulldown a {
     color: #042A84;
-    text-decoration: none;
     font-size: 1.5rem;
+    text-decoration: none;
 }
 
 .pulldown h2 {
     display: none;
+    margin-left: 4%;
     opacity: 0;
     transition: opacity 1s ease-in-out;
-    margin-left: 4%;
 }
 
 .pulldown button {
+    background-color: #042A84;
+    border-radius: 8px;
+    border: .5px solid #042A84;
+    color: white;
     display: none;
+    font-size: 1rem;
+    margin-left: 4%;
     opacity: 0;
     padding: 12px 10px;
-    width: 160px;
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: #042A84;
-    color: white;
-    border: .5px solid #042A84;
     transition: opacity 1s ease-in-out;
-    margin-left: 4%;
+    width: 160px;
 }
 
 #github, #linkedin{
