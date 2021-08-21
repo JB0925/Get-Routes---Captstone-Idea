@@ -27,10 +27,19 @@ user_email = None
 MAP_ARRAY = ['map', 'hybrid', 'satellite', 'dark', 'light']
 LIMIT = -5
 
+
+
+"""
+User registration, login, and logout methods, as well as a 404
+page and an About page.
+"""
+
 @app.route('/', methods=['GET', 'POST'])
 def signup():
-    """Method used to render the home / registration
-       page and create a new user in the database."""
+    """
+    Method used to render the home / registration
+    page and create a new user in the database.
+    """
     form = RegistrationForm()
 
     if form.validate_on_submit():
@@ -51,8 +60,10 @@ def signup():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Method used to render the login page and login
-       an existing user."""
+    """
+    Method used to render the login page and login
+    an existing user.
+    """
     
     form = LoginForm()
 
@@ -71,10 +82,43 @@ def login():
     return redirect(url_for('signup'))
 
 
+@app.route('/logout')
+def logout():
+    """Handles logging out a user."""
+    if "username" in session:
+        session.pop("username")
+    flash('You were successfully logged out!')
+    return redirect(url_for('login'))
+
+
+@app.route('/about')
+def about():
+    """
+    A page solely used to display the purpose
+    of the app and the technologies used to create it.
+    """
+    return render_template('about.html')
+
+
+@app.route('/404')
+def not_found():
+    """
+    A page used when a user types in information
+    for which there is no match.
+    """
+    return render_template('404.html')
+
+
+"""
+Searching for transit stations, showing station results and upcoming routes.
+"""
+
 @app.route('/search', methods=['GET', 'POST'])
 def search_stations():
-    """Method used to locate public transit stations within a 
-       500 meter radius of the address given by the user."""
+    """
+    Method used to locate public transit stations within a 
+    500 meter radius of the address given by the user.
+    """
     global stations
     global coords
     global lat_and_lng
@@ -94,7 +138,7 @@ def search_stations():
             return redirect(url_for('not_found'))
         lat_and_lng["latitude"] = lat
         lat_and_lng["longitude"] = lng
-
+        print(lat, lng)
         # gets data about stations and then packages it into an easier to read format
         station_data = _get_routes_and_stations(lat,lng)
         stations = get_station_data(station_data)
@@ -111,19 +155,23 @@ def search_stations():
 
 @app.route('/search/results')
 def show_station_results():
-    """Renders the page to show transit stations located near
-       the address the user gave. Passes the global stations
-       variable to the template, as well as an array used to
-       give each map an id (used in rendering the maps)."""
+    """
+    Renders the page to show transit stations located near
+    the address the user gave. Passes the global stations
+    variable to the template, as well as an array used to
+    give each map an id (used in rendering the maps).
+    """
     global stations
     return render_template('station_results.html', routes=stations, maps=MAP_ARRAY)
 
 
 @app.route('/stations/<idx>/routes')
 def show_route_results(idx):
-    """Shows a list of all routes and their relevant information,
-       as well as setting data to be used in a client-side call
-       that is used to render the maps."""
+    """
+    Shows a list of all routes and their relevant information,
+    as well as setting data to be used in a client-side call
+    that is used to render the maps.
+    """
     global coords
     idx = int(idx)
 
@@ -151,20 +199,28 @@ def show_route_results(idx):
     return render_template('route_results.html',routes=available_routes, maps=MAP_ARRAY, names=names)
 
 
+"""
+Routes called on the client side to get data from the server side.
+Used to render maps with the correct data.
+"""
 @app.route('/get_coords')
 def get_coords():
-    """A route used by the client-side to get data
-       about the stations that will allow maps to 
-       be rendered."""
+    """
+    A route used by the client-side to get data
+    about the stations that will allow maps to 
+    be rendered.
+    """
     return jsonify(stations)
 
 
 @app.route('/get_routes')
 def get_routes():
-    """A route used by the client-side to get data
-       about the routes for a selected station. It
-       also gives the client-side the data that allows
-       the maps to be rendered."""
+    """
+    A route used by the client-side to get data
+    about the routes for a selected station. It
+    also gives the client-side the data that allows
+    the maps to be rendered.
+    """
     global lat_and_lng
     global city_and_state
     global destination_coords
@@ -177,17 +233,21 @@ def get_routes():
     return jsonify(routes)
 
 
-@app.route('/about')
-def about():
-    """A page solely used to display the purpose
-    of the app and the technologies used to create it."""
-    return render_template('about.html')
-
+"""
+Routes called to check to see if a user has an account.
+If they do, a 'reset password' email will be sent with 
+a temporary password. The user will then enter the 
+temporary password, and then their new password, which
+will be hashed and stored in the database as a replacement
+for their old password.
+"""
 
 @app.route('/reset/email', methods=['GET', 'POST'])
 def check_email():
-    """A page used to ensure that a logged out user 
-    has an account on the website."""
+    """
+    A page used to ensure that a logged out user 
+    has an account on the website.
+    """
     form = GetEmailForm()
     dummy_pw = config('TEMP_PW')
     
@@ -210,6 +270,11 @@ def check_email():
 
 @app.route('/reset', methods=['GET', 'POST'])
 def reset_password():
+    """
+    Route that prompts the user to enter a temporary password
+    that was emailed to them. Then, they will also enter a 
+    new password, which will then be updated in the database.
+    """
     dummy_pw = config('TEMP_PW')
     form = ResetPasswordForm()
     
@@ -229,19 +294,3 @@ def reset_password():
         return redirect(url_for('login'))
     
     return render_template('reset.html', form=form)
-
-
-@app.route('/404')
-def not_found():
-    """A page used when a user types in information
-    for which there is no match."""
-    return render_template('404.html')
-
-
-@app.route('/logout')
-def logout():
-    """Handles logging out a user."""
-    if "username" in session:
-        session.pop("username")
-    flash('You were successfully logged out!')
-    return redirect(url_for('login'))
