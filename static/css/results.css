@@ -44,13 +44,13 @@ body {
 }
 
 .map {
-    height: 300px;
+    height: auto;
     margin-right: 0;
     margin: 10px;
     width: 50%;
 }
 
-.route h2 {
+.route h2, h3 {
     color: #042A84;
 }
 
@@ -61,6 +61,11 @@ body {
 .route a {
     color: #042A84;
     text-decoration: none;
+}
+
+.line-under {
+    border-bottom: 0.5px solid #042A84;
+    padding-bottom: 3px;
 }
 
 @media screen and (max-width: 900px) {

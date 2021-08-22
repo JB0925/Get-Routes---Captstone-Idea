@@ -1,15 +1,17 @@
+import re
 from collections import defaultdict
 from typing import List, Dict, Tuple
 
 import requests
 from dateutil.parser import parse
 from decouple import config
+import googlemaps
 
 
 KEY = config('HERE_API_KEY')
 STATIONS_URL = 'https://transit.hereapi.com/v8/departures'
 GEOCODE_URL = 'https://geocoder.ls.hereapi.com/6.2/geocode.json?apiKey={key}&searchtext={search}'
-
+GMAPS = googlemaps.Client(key=config('API_KEY'))
 
 def create_search_string_for_station_search(city: str, state: str, street_address: str = None) -> str:
     """
@@ -29,14 +31,14 @@ def get_lat_and_long(search: str) -> Tuple:
     """
     search = "+".join([s.lower() for s in search.split()])
     try:
-        response = requests.get(GEOCODE_URL.format(key=KEY, search=search))
-        coords = response.json()['Response']['View'][0]['Result'][0]['Location']['NavigationPosition'][0]
-        return coords["Latitude"], coords['Longitude']
+        geocoords = GMAPS.geocode(search)[0]['geometry']['location']
+        return geocoords['lat'], geocoords['lng']
+
     except IndexError:
         return None
 
 
-def _get_routes_and_stations(latitude: str, longitude: str) -> Dict:
+def _get_routes_and_stations(latitude: float, longitude: float) -> Dict:
     """
     Gets route information, including departure times
     and destinations for the given longitude and latitude
@@ -46,6 +48,7 @@ def _get_routes_and_stations(latitude: str, longitude: str) -> Dict:
         return
     params = {"apikey": KEY, "in": f"{latitude},{longitude}"}
     response = requests.get(STATIONS_URL, params=params)
+    print(response.json())
     try:
         return response.json()['boards']
     except IndexError:
@@ -147,12 +150,10 @@ def create_correct_destination_coordinates(data: List, address: Dict, origin_coo
     based on factors such as transportation mode, etc. Accounts for situations in which addresses
     are formed and no coordinates are found by simply returning the origin coordinates.
     """
-    transit_types = ['bus', 'subway', 'ferry']
+    transit_types = ['bus', 'subway', 'ferry', 'lightRail']
     start_coords = (origin_coords['latitude'], origin_coords['longitude'])
     if data[1] in transit_types:
-        print(f'{data[3]} {address["address"]}')
         destination_coords = get_lat_and_long(f'{data[3]} {address["address"]}') or start_coords
-        print(data[3], destination_coords)
         if abs(destination_coords[0] - origin_coords['latitude']) > 1.5:
             return start_coords
         else:
@@ -160,3 +161,13 @@ def create_correct_destination_coordinates(data: List, address: Dict, origin_coo
     
     train_coords = get_lat_and_long(data[3])
     return train_coords if train_coords else start_coords
+
+
+def get_directions_to_station(start_address, station_address):
+    """
+    Method used to get directions from the address the user inputs
+    to the station found via the HERE API.
+    """
+    directions = GMAPS.directions(start_address, station_address)[0]['legs'][0]['steps']
+    pattern = r'(<b>)|(</b>)|(<div>)|(</div>)|(<div[\w\W]+>)'
+    return [re.sub(pattern, '', direction['html_instructions']) for direction in directions]

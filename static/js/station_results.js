@@ -25,7 +25,7 @@ class MapMaker {
         // Gathers necessary data and uses it to render a map
         // in browser with a point to show the location of the
         // station.
-        let data = await axios.get('http://127.0.0.1:5000/get_coords');
+        let data = await axios.get('http://127.0.0.1:5000/get_stations');
         let routes = data.data
         let maps = this.mapArray();
 

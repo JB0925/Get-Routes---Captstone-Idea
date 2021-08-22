@@ -5,7 +5,7 @@ from flask_bcrypt import Bcrypt
 from forms import GetEmailForm, RegistrationForm, LoginForm, ResetPasswordForm, RouteSearchForm
 from models import db, connect_db, User, Search
 from get_routes import create_correct_destination_coordinates, create_search_string_for_station_search, get_lat_and_long, get_route_data, \
-                        get_station_data, _get_routes_and_stations
+                        get_station_data, _get_routes_and_stations, get_directions_to_station
 from sms import send
 
 app = Flask(__name__)
@@ -18,11 +18,12 @@ connect_db(app)
 db.create_all()
 
 # global variables used to send data on client-side requests
-coords = []
-destination_coords = []
-lat_and_lng = {}
+route_information = []
+route_destination_coords = []
+origin_lat_and_lng = {}
 stations = {}
-city_and_state = {'address': None}
+station_directions = []
+origin_city_and_state = {'address': None}
 user_email = None
 MAP_ARRAY = ['map', 'hybrid', 'satellite', 'dark', 'light']
 LIMIT = -5
@@ -76,9 +77,11 @@ def login():
         username = form.username.data
         password = form.password.data
         user = User.authenticate(username, password)
+
         if user:
             session['username'] = username
             return redirect(url_for('search_stations'))
+    flash('Your account was not found. Please sign up today!')
     return redirect(url_for('signup'))
 
 
@@ -120,9 +123,10 @@ def search_stations():
     500 meter radius of the address given by the user.
     """
     global stations
-    global coords
-    global lat_and_lng
-    global city_and_state
+    global station_directions
+    global route_information
+    global origin_lat_and_lng
+    global origin_city_and_state
     form = RouteSearchForm()
 
     if form.validate_on_submit():
@@ -130,20 +134,22 @@ def search_stations():
         city = form.city.data
         state = form.state.data
         full_address = create_search_string_for_station_search(city, state, street_address)
-        coords = get_route_data(full_address)
-        city_and_state['address'] = f'{city}, {state.upper()}'
+        route_information = get_route_data(full_address)
+        origin_city_and_state['address'] = f'{city}, {state.upper()}'
         try:
             lat, lng = get_lat_and_long(full_address)
         except TypeError:
             return redirect(url_for('not_found'))
-        lat_and_lng["latitude"] = lat
-        lat_and_lng["longitude"] = lng
-        print(lat, lng)
+        origin_lat_and_lng["latitude"] = lat
+        origin_lat_and_lng["longitude"] = lng
+
         # gets data about stations and then packages it into an easier to read format
         station_data = _get_routes_and_stations(lat,lng)
         stations = get_station_data(station_data)
         
-        if station_data:
+        if stations:
+            station_directions = [get_directions_to_station(full_address, f'{stations[i][0]} {full_address}') \
+                                    for i in range(len(stations))]
             return redirect(url_for('show_station_results'))
         return redirect(url_for('not_found'))
     
@@ -162,7 +168,8 @@ def show_station_results():
     give each map an id (used in rendering the maps).
     """
     global stations
-    return render_template('station_results.html', routes=stations, maps=MAP_ARRAY)
+    global station_directions
+    return render_template('station_results.html', routes=stations, directions=station_directions, maps=MAP_ARRAY)
 
 
 @app.route('/stations/<idx>/routes')
@@ -172,7 +179,7 @@ def show_route_results(idx):
     as well as setting data to be used in a client-side call
     that is used to render the maps.
     """
-    global coords
+    global route_information
     idx = int(idx)
 
     # handling GET requests and edge cases.
@@ -180,31 +187,31 @@ def show_route_results(idx):
         return redirect(url_for('signup'))
     if idx < 0 or idx > 4:
         return redirect(url_for('search_stations'))
-    if not coords:
+    if not route_information:
         return redirect(url_for('search_stations'))
     
-    routes = coords[idx]
-    names = []
+    routes = route_information[idx]
+    route_names = []
     user = User.query.filter_by(username=session["username"]).first()
     for key in routes:
-        names.append(key[2])
-        new_destination_coords = create_correct_destination_coordinates(key, city_and_state, lat_and_lng)
-        destination_coords.append(new_destination_coords)
+        route_names.append(key[2])
+        new_destination_coords = create_correct_destination_coordinates(key, origin_city_and_state, origin_lat_and_lng)
+        route_destination_coords.append(new_destination_coords)
         new_route = Search(time=key[0], transportation_mode=key[1],
                                 destination=key[4], website=key[5], user_id=user.id)
         db.session.add(new_route)
         db.session.commit()
     
     available_routes = Search.query.all()[LIMIT:]
-    return render_template('route_results.html',routes=available_routes, maps=MAP_ARRAY, names=names)
+    return render_template('route_results.html',routes=available_routes, maps=MAP_ARRAY, names=route_names)
 
 
 """
 Routes called on the client side to get data from the server side.
 Used to render maps with the correct data.
 """
-@app.route('/get_coords')
-def get_coords():
+@app.route('/get_stations')
+def get_stations():
     """
     A route used by the client-side to get data
     about the stations that will allow maps to 
@@ -221,15 +228,15 @@ def get_routes():
     also gives the client-side the data that allows
     the maps to be rendered.
     """
-    global lat_and_lng
-    global city_and_state
-    global destination_coords
+    global origin_lat_and_lng
+    global origin_city_and_state
+    global route_destination_coords
     routes = [r.serialize for r in Search.query.all()[-5:]]
 
-    routes.append(lat_and_lng)
-    routes.append(city_and_state)
-    routes.append(destination_coords)
-    destination_coords = []
+    routes.append(origin_lat_and_lng)
+    routes.append(origin_city_and_state)
+    routes.append(route_destination_coords)
+    route_destination_coords = []
     return jsonify(routes)
 
 
