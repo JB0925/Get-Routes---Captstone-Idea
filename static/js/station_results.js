@@ -62,4 +62,6 @@ class MapMaker {
 }
 
 let loadMaps = new MapMaker()
-loadMaps.makeMaps();
+setTimeout(() => {
+    loadMaps.makeMaps()
+}, 500);
