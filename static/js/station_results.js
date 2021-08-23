@@ -5,7 +5,7 @@ class MapMaker {
     // the map.
     constructor() {
         this.makeMaps = this.makeMaps.bind(this);
-        this.defer = this.defer.bind(this);
+        // this.defer = this.defer.bind(this);
         this.mapArray = this.mapArray.bind(this);
     }
 
@@ -48,17 +48,17 @@ class MapMaker {
         });
     }
     
-    defer(method) {
-        // Recursive method used to check to see if the DOM
-        // is ready for maps to be added. If it isn't, we 
-        // use a setTimeout to recall the method again.
-        if (document.querySelector('#map')) {
-            method();
-        } else {
-            setTimeout(function() {defer(method)},500)
-        }
-    };
+    // defer(method) {
+    //     // Recursive method used to check to see if the DOM
+    //     // is ready for maps to be added. If it isn't, we 
+    //     // use a setTimeout to recall the method again.
+    //     if (document.querySelector('#map')) {
+    //         method();
+    //     } else {
+    //         setTimeout(function() {defer(method)},500)
+    //     }
+    // };
 }
 
 let loadMaps = new MapMaker()
-loadMaps.defer(loadMaps.makeMaps);
+loadMaps.makeMaps();
