@@ -1,3 +1,5 @@
+import os
+
 from decouple import config
 from flask import Flask, redirect, render_template, url_for, session, request, jsonify, flash
 from flask_bcrypt import Bcrypt
@@ -11,7 +13,7 @@ from sms import send
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = config('SECRET_KEY')
-app.config['SQLALCHEMY_DATABASE_URI'] = config("DATABASE_URL")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 connect_db(app)
