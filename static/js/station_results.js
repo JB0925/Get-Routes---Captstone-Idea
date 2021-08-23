@@ -61,4 +61,4 @@ function defer(method) {
         setTimeout(function() {defer(method)},500)
     }
 };
-document.addEventListener('DOMContentLoaded', loadMaps.makeMaps)
+window.addEventListener('DOMContentLoaded', loadMaps.makeMaps)
