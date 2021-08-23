@@ -48,20 +48,18 @@ class MapMaker {
             map.addControl(L.mapquest.control());
         });
     }
-    
-    // defer(method) {
-    //     // Recursive method used to check to see if the DOM
-    //     // is ready for maps to be added. If it isn't, we 
-    //     // use a setTimeout to recall the method again.
-    //     if (document.querySelector('#map')) {
-    //         method();
-    //     } else {
-    //         setTimeout(function() {defer(method)},500)
-    //     }
-    // };
 }
 
 let loadMaps = new MapMaker()
-setTimeout(() => {
-    loadMaps.makeMaps()
-}, 500);
+function defer(method) {
+    // Recursive method used to check to see if the DOM
+    // is ready for maps to be added. If it isn't, we 
+    // use a setTimeout to recall the method again.
+    if (document.querySelector('#map')) {
+        method();
+    } else {
+        setTimeout(function() {defer(method)},500)
+    }
+};
+
+defer(loadMaps.makeMaps)
