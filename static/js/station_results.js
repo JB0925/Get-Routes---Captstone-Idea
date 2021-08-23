@@ -55,7 +55,7 @@ class MapMaker {
         if (document.querySelector('#map')) {
             method();
         } else {
-            setTimeout(function() {this.defer(method)},500)
+            setTimeout(function() {defer(method)},500)
         }
     };
 }
