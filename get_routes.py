@@ -30,6 +30,7 @@ def get_lat_and_long(search: str) -> Tuple:
     building address, i.e. '425 W Spring St Chicago IL'.
     """
     search = "+".join([s.lower() for s in search.split()])
+    
     try:
         geocoords = GMAPS.geocode(search)[0]['geometry']['location']
         return geocoords['lat'], geocoords['lng']
@@ -48,7 +49,7 @@ def _get_routes_and_stations(latitude: float, longitude: float) -> Dict:
         return
     params = {"apikey": KEY, "in": f"{latitude},{longitude}"}
     response = requests.get(STATIONS_URL, params=params)
-    print(response.json())
+    
     try:
         return response.json()['boards']
     except IndexError:
@@ -64,11 +65,13 @@ def prettify_time(time: str) -> str:
     time = parse(time)
     minute = time.minute if len(str(time.minute)) == 2 else f'0{time.minute}'
     hour = time.hour if len(str(time.hour)) == 2 else f'0{time.hour}'
+    month = time.month if len(str(time.month)) == 2 else f'0{time.month}'
+    day = time.day if len(str(time.day)) == 2 else f'0{time.day}'
 
     if time.minute < 10:
-        pretty_time = f'{time.year}-{time.month}-{time.day} @{hour}:{minute}'
+        pretty_time = f'{time.year}-{month}-{day} @{hour}:{minute}'
     else:
-        pretty_time = f'{time.year}-{time.month}-{time.day} @{hour}:{minute}'
+        pretty_time = f'{time.year}-{month}-{day} @{hour}:{minute}'
     return f'{pretty_time} AM' if time.hour < 12 else f'{pretty_time} PM'
 
 

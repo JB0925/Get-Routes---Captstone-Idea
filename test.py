@@ -155,16 +155,6 @@ class RideFinderTestCase(TestCase):
             self.logout_user(user)
             resp = client.get('/logout')
             self.assertEqual(resp.status_code, 302)
-    
-
-    def test_show_stations_route(self):
-        with app.test_client() as client:
-            with captured_templates(app) as templates:
-                resp = client.get('/search/results')
-                template, context = templates[0]
-                self.assertEqual(context['routes'], {})
-                self.assertEqual(resp.status_code, 200)
-                self.assertIn('We\'ve', resp.get_data(as_text=True))
 
 
     def test_render_stations_template(self):
@@ -213,5 +203,12 @@ class RideFinderTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Please enter the email address associated with your account.',
                             resp.get_data(as_text=True))
+    
+
+    def test_enter_new_password_route(self):
+        with app.test_client() as client:
+            resp = client.get('/reset')
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Reset your password.', resp.get_data(as_text=True))
 
 
