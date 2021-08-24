@@ -3,6 +3,7 @@ import os
 from decouple import config
 from flask import Flask, redirect, render_template, url_for, session, request, jsonify, flash
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS, cross_origin
 
 from forms import GetEmailForm, RegistrationForm, LoginForm, ResetPasswordForm, RouteSearchForm
 from models import OriginInfo, db, connect_db, User, Search, Station, StationDirection, RouteData
@@ -11,6 +12,7 @@ from get_routes import create_correct_destination_coordinates, create_search_str
 from sms import send
 
 app = Flask(__name__)
+CORS(app, support_credentials=True)
 
 app.config['SECRET_KEY'] = config('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL").replace("://", "ql://", 1)
@@ -217,6 +219,7 @@ Routes called on the client side to get data from the server side.
 Used to render maps with the correct data.
 """
 @app.route('/get_stations')
+@cross_origin(supports_credentials=True)
 def get_stations():
     """
     A route used by the client-side to get data
@@ -230,6 +233,7 @@ def get_stations():
 
 
 @app.route('/get_routes')
+@cross_origin(supports_credentials=True)
 def get_routes():
     """
     A route used by the client-side to get data
