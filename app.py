@@ -200,7 +200,6 @@ def show_route_results(idx):
         route_names.append(key[2])
         lat, lng= create_correct_destination_coordinates(key, origin_name.city_and_state, origin_lat_and_lng)
     
-        route_destination_coords.append((lat, lng))
         new_search = Search(time=key[0], transportation_mode=key[1],
                                 destination=key[4], website=key[5], user_id=user.id)
         new_route = RouteData(time=key[0], name=key[1], mode=key[2], headsign=key[3], 
