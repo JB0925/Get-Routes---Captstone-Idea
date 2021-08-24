@@ -8,7 +8,7 @@ class MakeSingleMap {
     async createMap() {
         // Collects all the data needed to create the map and
         // plot coordinates on it.
-        let data = await axios.get('https://find-rides.herokuapp.com/get_routes')
+        let data = await axios.get('http://find-rides.herokuapp.com/get_routes')
         let routes = data.data;
         let {latitude, longitude} = routes[5];
         let destination_coords = routes.slice(-1)[0]
