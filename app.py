@@ -164,8 +164,11 @@ def show_station_results():
     variable to the template, as well as an array used to
     give each map an id (used in rendering the maps).
     """
-    global station_total
-    stations = [s.serialize for s in Station.query.all()[-station_total:]]
+    origin = OriginInfo.query.all()[-1]
+    station_data = _get_routes_and_stations(float(origin.latitude),float(origin.longitude))
+    stations = get_station_data(station_data)
+    length = len(stations)
+    stations = [s.serialize for s in Station.query.all()[-length:]]
     station_directions = [d.directions.split('+') for d in StationDirection.query.all()[-station_total:]]
     return render_template('station_results.html', routes=stations, directions=station_directions, maps=MAP_ARRAY)
 
