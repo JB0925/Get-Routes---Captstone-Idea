@@ -171,11 +171,8 @@ def show_station_results():
     """
     global stations
     global station_directions
-    new_stations = stations
-    new_station_directions = station_directions
-    stations = {}
-    station_directions = []
-    return render_template('station_results.html', routes=new_stations, directions=new_station_directions, maps=MAP_ARRAY)
+    print(stations, station_directions)
+    return render_template('station_results.html', routes=stations, directions=station_directions, maps=MAP_ARRAY)
 
 
 @app.route('/stations/<idx>/routes')
