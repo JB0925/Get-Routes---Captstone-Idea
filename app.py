@@ -19,7 +19,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 connect_db(app)
 db.create_all()
 
-# global variables used to send data on client-side requests
+# global variables used to send data for client-side requests
 user_email = None
 station_total = None
 MAP_ARRAY = ['map', 'hybrid', 'satellite', 'dark', 'light']
