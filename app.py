@@ -169,7 +169,7 @@ def show_station_results():
     stations = get_station_data(station_data)
     length = len(stations)
     stations = [s.serialize for s in Station.query.all()[-length:]]
-    station_directions = [d.directions.split('+') for d in StationDirection.query.all()[-station_total:]]
+    station_directions = [d.directions.split('+') for d in StationDirection.query.all()[-length:]]
     return render_template('station_results.html', routes=stations, directions=station_directions, maps=MAP_ARRAY)
 
 
