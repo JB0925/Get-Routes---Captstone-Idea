@@ -171,7 +171,11 @@ def show_station_results():
     """
     global stations
     global station_directions
-    return render_template('station_results.html', routes=stations, directions=station_directions, maps=MAP_ARRAY)
+    new_stations = stations
+    new_station_directions = station_directions
+    stations = {}
+    station_directions = []
+    return render_template('station_results.html', routes=new_stations, directions=new_station_directions, maps=MAP_ARRAY)
 
 
 @app.route('/stations/<idx>/routes')
@@ -219,6 +223,7 @@ def get_stations():
     about the stations that will allow maps to 
     be rendered.
     """
+    global stations
     return jsonify(stations)
 
 
@@ -239,6 +244,8 @@ def get_routes():
     routes.append(origin_city_and_state)
     routes.append(route_destination_coords)
     route_destination_coords = []
+    origin_city_and_state = {}
+    origin_lat_and_lng = {}
     return jsonify(routes)
 
 
