@@ -104,15 +104,15 @@ def collect_route_information(data: List) -> Dict:
 
     try:
         for item in data:
+            temp = []
             for route in item['departures']:
                 route_ = route['transport']
                 long_name = determine_long_form_route_name(route_)
-                temp = []
                 time = prettify_time(route['time'])
                 route_data = [time, route_['mode'], route_['name'], 
                                 route_['headsign'], long_name, route['agency']['website']]
-                temp.extend(route_data)
-                result[i].append(temp)
+                temp.append(route_data)
+            result[i].append(temp)
             i += 1
         return result
     except TypeError:
@@ -147,17 +147,17 @@ def get_route_data(address: str) -> Dict:
     return collect_route_information(route_data)
 
 
-def create_correct_destination_coordinates(data: List, address: Dict, origin_coords: Dict) -> Tuple:
+def create_correct_destination_coordinates(data: List, address: str, origin_coords: Dict) -> Tuple:
     """
     A method to generate the correct coordinates (or a close estimation) for a destination
     based on factors such as transportation mode, etc. Accounts for situations in which addresses
     are formed and no coordinates are found by simply returning the origin coordinates.
     """
     transit_types = ['bus', 'subway', 'ferry', 'lightRail']
-    start_coords = (origin_coords['latitude'], origin_coords['longitude'])
+    start_coords = (float(origin_coords['latitude']), float(origin_coords['longitude']))
     if data[1] in transit_types:
-        destination_coords = get_lat_and_long(f'{data[3]} {address["address"]}') or start_coords
-        if abs(destination_coords[0] - origin_coords['latitude']) > 1.5:
+        destination_coords = get_lat_and_long(f'{data[3]} {address}') or start_coords
+        if abs(destination_coords[0] - float(origin_coords['latitude'])) > 1.5:
             return start_coords
         else:
             return destination_coords

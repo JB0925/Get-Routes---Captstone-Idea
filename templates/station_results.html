@@ -23,7 +23,7 @@
                 <div class="route-container">
                     <div id="{{maps[loop.index0]}}" class="map"></div>
                     <div class="route">
-                        <h2><a href="/stations/{{loop.index0}}/routes"><b>Station:</b> {{ routes[route][0] }}</a></h2>
+                        <h2><a href="/stations/{{loop.index0}}/routes"><b>Station:</b> {{ route['name'] }}</a></h2>
                         <p class="line-under"><em>Click the station above to view details about upcoming routes.</em></p>
                         <h3>Directions to this station:</h3>
                         {% for direction in directions[loop.index0] %}
