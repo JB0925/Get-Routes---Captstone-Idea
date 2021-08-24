@@ -171,7 +171,6 @@ def show_station_results():
     """
     global stations
     global station_directions
-    print(stations, station_directions)
     return render_template('station_results.html', routes=stations, directions=station_directions, maps=MAP_ARRAY)
 
 
