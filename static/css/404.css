@@ -25,9 +25,45 @@ button {
     border: 1px solid #FFA553;
     height: 35px;
     width: 150px;
+    z-index: 1;
 }
 
 a {
     color: white;
     text-decoration: none;
+}
+
+@media screen and (max-width: 900px) {
+    main {
+        padding-bottom: 170px;
+    }
+    .container {
+        height: 70vh;
+        /* padding-bottom: 100px; */
+    }
+
+    .container p {
+        width: 50%;
+    }
+
+    body {
+        overflow-x: hidden;
+        position: relative;
+    }
+
+    nav ul {
+        display: none;
+    }
+
+    #burger {
+        color: #042A84;
+        display: visible;
+        font-size: 2rem;
+        margin-left: auto;
+        margin-right: 30px;
+    }
+
+    .hide {
+        display: visible;
+    }
 }
