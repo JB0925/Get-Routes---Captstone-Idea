@@ -14,7 +14,11 @@ app = Flask(__name__)
 CORS(app, support_credentials=True)
 
 app.config['SECRET_KEY'] = config('SECRET_KEY')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL").replace("://", "ql://", 1)
+try:
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL").replace("://", "ql://", 1)
+except AttributeError:
+    # this is used locally and used to run tests
+    app.config['SQLALCHEMY_DATABASE_URI'] = config('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 connect_db(app)
