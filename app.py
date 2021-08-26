@@ -7,8 +7,7 @@ from flask_cors import CORS, cross_origin
 
 from forms import GetEmailForm, RegistrationForm, LoginForm, ResetPasswordForm, RouteSearchForm
 from models import OriginInfo, db, connect_db, User, Search, Station, StationDirection, RouteData
-from get_routes import create_correct_destination_coordinates, create_search_string_for_station_search, get_lat_and_long, get_route_data, \
-                        get_station_data, _get_routes_and_stations, get_directions_to_station
+import get_routes as gr
 from sms import send
 
 app = Flask(__name__)
@@ -23,7 +22,6 @@ db.create_all()
 
 # global variables used to send data for client-side requests
 user_email = None
-station_total = None
 MAP_ARRAY = ['map', 'hybrid', 'satellite', 'dark', 'light']
 LIMIT = -5
 
@@ -121,17 +119,16 @@ def search_stations():
     Method used to locate public transit stations within a 
     500 meter radius of the address given by the user.
     """
-    global station_total
     form = RouteSearchForm()
 
     if form.validate_on_submit():
         street_address = form.street_address.data
         city = form.city.data
         state = form.state.data
-        full_address = create_search_string_for_station_search(city, state, street_address)
+        full_address = gr.create_search_string_for_station_search(city, state, street_address)
 
         try:
-            lat, lng = get_lat_and_long(full_address)
+            lat, lng = gr.get_lat_and_long(full_address)
         except TypeError:
             return redirect(url_for('not_found'))
         
@@ -140,13 +137,12 @@ def search_stations():
         db.session.commit()
 
         # gets data about stations and then packages it into an easier to read format
-        station_data = _get_routes_and_stations(lat,lng)
-        stations = get_station_data(station_data)
+        station_data = gr._get_routes_and_stations(lat,lng)
+        stations = gr.get_station_data(station_data)
         
         if stations:
-            station_total = len(stations)
             Station.batch_commit(stations)
-            station_directions = [get_directions_to_station(full_address, f'{stations[i][0]} {full_address}') \
+            station_directions = [gr.get_directions_to_station(full_address, f'{stations[i][0]} {full_address}') \
                                     for i in range(len(stations))]
             StationDirection.batch_commit(station_directions)
             return redirect(url_for('show_station_results'))
@@ -167,8 +163,8 @@ def show_station_results():
     give each map an id (used in rendering the maps).
     """
     origin = OriginInfo.query.all()[-1]
-    station_data = _get_routes_and_stations(float(origin.latitude),float(origin.longitude))
-    stations = get_station_data(station_data)
+    station_data = gr._get_routes_and_stations(float(origin.latitude),float(origin.longitude))
+    stations = gr.get_station_data(station_data)
     length = len(stations)
     stations = [s.serialize for s in Station.query.all()[-length:]]
     station_directions = [d.directions.split('+') for d in StationDirection.query.all()[-length:]]
@@ -183,8 +179,8 @@ def show_route_results(idx):
     that is used to render the maps.
     """
     idx = int(idx)
-    origin_name = OriginInfo.query.all()[-1]
-    route_information = get_route_data(origin_name.city_and_state)[idx][0]
+    origin = OriginInfo.query.all()[-1]
+    route_information = gr.get_route_data(origin.city_and_state)[idx][0]
     
     # handling GET requests and edge cases.
     if "username" not in session:
@@ -194,22 +190,9 @@ def show_route_results(idx):
     if not route_information:
         return redirect(url_for('search_stations'))
     
-    routes = route_information
-    route_names = []
-    origin_lat_and_lng = {"latitude": origin_name.latitude, "longitude": origin_name.longitude}
+    origin_lat_and_lng = {"latitude": origin.latitude, "longitude": origin.longitude}
     user = User.query.filter_by(username=session["username"]).first()
-    for key in routes:
-        route_names.append(key[2])
-        lat, lng= create_correct_destination_coordinates(key, origin_name.city_and_state, origin_lat_and_lng)
-    
-        new_search = Search(time=key[0], transportation_mode=key[1],
-                                destination=key[4], website=key[5], user_id=user.id)
-        new_route = RouteData(time=key[0], name=key[1], mode=key[2], headsign=key[3], 
-                                long_name=key[4], website=key[5], latitude=str(lat), longitude=str(lng))
-        db.session.add(new_search)
-        db.session.add(new_route)
-    db.session.commit()
-    
+    route_names = gr.save_route_data_to_db(route_information, origin_lat_and_lng, user, origin)
     available_routes = Search.query.all()[LIMIT:]
     return render_template('route_results.html',routes=available_routes, maps=MAP_ARRAY, names=route_names)
 
@@ -227,8 +210,8 @@ def get_stations():
     be rendered.
     """
     origin = OriginInfo.query.all()[-1]
-    data = _get_routes_and_stations(float(origin.latitude), float(origin.longitude))
-    stations = get_station_data(data)
+    data = gr._get_routes_and_stations(float(origin.latitude), float(origin.longitude))
+    stations = gr.get_station_data(data)
     return jsonify(stations)
 
 

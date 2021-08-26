@@ -7,6 +7,8 @@ from dateutil.parser import parse
 from decouple import config
 import googlemaps
 
+from models import db, Search, RouteData, OriginInfo, User
+
 
 KEY = config('HERE_API_KEY')
 STATIONS_URL = 'https://transit.hereapi.com/v8/departures'
@@ -166,7 +168,7 @@ def create_correct_destination_coordinates(data: List, address: str, origin_coor
     return train_coords if train_coords else start_coords
 
 
-def get_directions_to_station(start_address, station_address):
+def get_directions_to_station(start_address: str, station_address: str) -> List[str]:
     """
     Method used to get directions from the address the user inputs
     to the station found via the HERE API.
@@ -174,3 +176,21 @@ def get_directions_to_station(start_address, station_address):
     directions = GMAPS.directions(start_address, station_address)[0]['legs'][0]['steps']
     pattern = r'(<b>)|(</b>)|(<div>)|(</div>)|(<div[\w\W]+>)'
     return [re.sub(pattern, '', direction['html_instructions']) for direction in directions]
+
+
+def save_route_data_to_db(routes: List, coords_dict: Dict, user: User, origin: OriginInfo) -> None:
+    route_names = []
+
+    for key in routes:
+        route_names.append(key[2])
+        lat, lng= create_correct_destination_coordinates(key, origin.city_and_state, coords_dict)
+    
+        new_search = Search(time=key[0], transportation_mode=key[1],
+                                destination=key[4], website=key[5], user_id=user.id)
+        new_route = RouteData(time=key[0], name=key[1], mode=key[2], headsign=key[3], 
+                                long_name=key[4], website=key[5], latitude=str(lat), longitude=str(lng))
+        db.session.add(new_search)
+        db.session.add(new_route)
+    db.session.commit()
+    
+    return route_names

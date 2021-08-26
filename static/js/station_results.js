@@ -51,14 +51,4 @@ class MapMaker {
 }
 
 let loadMaps = new MapMaker()
-function defer(method) {
-    // Recursive method used to check to see if the DOM
-    // is ready for maps to be added. If it isn't, we 
-    // use a setTimeout to recall the method again.
-    if (document.querySelector('#map')) {
-        method();
-    } else {
-        setTimeout(function() {defer(method)},500)
-    }
-};
 window.addEventListener('DOMContentLoaded', loadMaps.makeMaps)
