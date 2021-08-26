@@ -107,6 +107,7 @@ label {
 
     body {
         position: relative;
+        overflow-x: hidden;
     }
 
     nav ul {
