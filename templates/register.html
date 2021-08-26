@@ -18,7 +18,11 @@
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for msg in messages %}
+                    {% if msg == 'Your account was not found. Please sign up today!' %}
+                    <p class="error">{{ msg }}</p>
+                    {% else %}
                     <p class="success">{{ msg }}</p>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
         {% endwith %}

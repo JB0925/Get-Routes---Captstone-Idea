@@ -81,6 +81,7 @@ def login():
 
         if user:
             session['username'] = username
+            flash('Logged in successfully!')
             return redirect(url_for('search_stations'))
     flash('Your account was not found. Please sign up today!')
     return redirect(url_for('signup'))
@@ -183,14 +184,18 @@ def show_route_results(idx):
     that is used to render the maps.
     """
     idx = int(idx)
+
+    if idx < 0 or idx > 4:
+        flash('Sorry, there are not that many available routes!')
+        return redirect(url_for('search_stations'))
+
     origin = OriginInfo.query.all()[-1]
     route_information = gr.get_route_data(origin.city_and_state)[idx][0]
     
     # handling GET requests and edge cases.
     if "username" not in session:
         return redirect(url_for('signup'))
-    if idx < 0 or idx > 4:
-        return redirect(url_for('search_stations'))
+    
     if not route_information:
         return redirect(url_for('search_stations'))
     

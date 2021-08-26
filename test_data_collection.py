@@ -10,7 +10,7 @@ import get_routes as gr
 KEY = config('HERE_API_KEY')
 STATIONS_URL = 'https://transit.hereapi.com/v8/departures'
 GEOCODE_URL = 'https://geocoder.ls.hereapi.com/6.2/geocode.json?apiKey={key}&searchtext={search}'
-GMAPS = googlemaps.Client(key=config('API_KEY'))
+GMAPS = googlemaps.Client(key=config('GOOGLE_API_KEY'))
 
 
 class GetRouteInfoTestCase(TestCase):
