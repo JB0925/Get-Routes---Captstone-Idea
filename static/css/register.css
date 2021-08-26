@@ -86,7 +86,7 @@ label {
     .signup {
         margin-right: 0;
         padding-bottom: 180px;
-        width: 100%;
+        width: auto;
         z-index: 1;
     }
 
@@ -97,7 +97,7 @@ label {
     }
 
     .info {
-        width: 100%;
+        width: auto;
     }
 
     form {
