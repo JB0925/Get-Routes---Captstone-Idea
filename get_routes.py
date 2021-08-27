@@ -174,7 +174,7 @@ def get_directions_to_station(start_address: str, station_address: str) -> List[
     to the station found via the HERE API.
     """
     directions = GMAPS.directions(start_address, station_address)[0]['legs'][0]['steps']
-    pattern = r'(<b>)|(</b>)|(<div>)|(</div>)|(<div[\w\W]+>)'
+    pattern = r'(<b>)|(</b>)|(<div>)|(</div>)|(<div[\w\W]+>)|(<wbr/>)'
     return [re.sub(pattern, '', direction['html_instructions']) for direction in directions]
 
 
