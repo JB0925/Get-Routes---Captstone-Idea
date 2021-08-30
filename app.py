@@ -14,6 +14,9 @@ app = Flask(__name__)
 CORS(app, support_credentials=True)
 
 app.config['SECRET_KEY'] = config('SECRET_KEY')
+
+# Heroku uses the "postgres" prefix for their database urls,
+# but this no longer works, hence the workaround below.
 try:
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL").replace("://", "ql://", 1)
 except AttributeError:
