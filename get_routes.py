@@ -51,11 +51,7 @@ def _get_routes_and_stations(latitude: float, longitude: float) -> Dict:
         return
     params = {"apikey": KEY, "in": f"{latitude},{longitude}"}
     response = requests.get(STATIONS_URL, params=params)
-    
-    try:
-        return response.json()['boards']
-    except IndexError:
-        return None
+    return response.json().get('boards')
 
 
 def prettify_time(time: str) -> str:

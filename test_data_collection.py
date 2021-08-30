@@ -74,6 +74,9 @@ class GetRouteInfoTestCase(TestCase):
     
 
     def test_get_routes_and_stations(self):
-        i = 0
         for lat, lng in self.mock_coordinates():
             self.assertEqual(type(gr._get_routes_and_stations(lat,lng)), list)
+    
+    
+    def test_get_routes_and_stations_bad_coords(self):
+        self.assertEqual(gr._get_routes_and_stations(456.3222, 1004.9), None)
