@@ -78,7 +78,9 @@ def determine_long_form_route_name(route: Dict) -> str:
     Method used to abstract some of the complexity out
     of the function below, 'collect_route_information.
     returns a string that is used to store in a dictionary
-    that will be sent client side.
+    that will be sent client side. Gets the most descriptive
+    name of the route, which will then be passed to
+    get_lat_and_lng.
     """
     long_form_name = route.get('longName')
     if not long_form_name:
