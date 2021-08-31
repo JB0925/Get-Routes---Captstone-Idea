@@ -221,6 +221,9 @@ class RideFinderTestCase(TestCase):
     
 
     def test_enter_new_password_route(self):
+        """
+        Test to make sure the "reset password" route renders correctly.
+        """
         with app.test_client() as client:
             resp = client.get('/reset')
             self.assertEqual(resp.status_code, 200)
