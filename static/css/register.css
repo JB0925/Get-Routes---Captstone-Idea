@@ -86,27 +86,28 @@ label {
     .signup {
         margin-right: 0;
         padding-bottom: 180px;
-        width: 100%;
+        width: auto;
         z-index: 1;
     }
 
     .signup h2 {
         align-self: flex-start;
-        margin-left: 3%;
+        margin-left: 6%;
         margin-right: 0;
     }
 
     .info {
-        width: 100%;
+        width: auto;
     }
 
     form {
         align-self: flex-start;
-        margin-left: 3%;
+        margin-left: 6%;
     }
 
     body {
         position: relative;
+        overflow-x: hidden;
     }
 
     nav ul {

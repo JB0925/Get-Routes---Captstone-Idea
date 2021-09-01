@@ -5,7 +5,7 @@ from flask import session, render_template, Flask
 from decouple import config
 
 from app import app, MAP_ARRAY
-from models import db, User, Search
+from models import db, User, Search, OriginInfo
 from forms import RegistrationForm
 
 
@@ -33,10 +33,22 @@ class RideFinderTestCase(TestCase):
         db.session.rollback()
     
 
+    def create_origin_object(self):
+        origin = OriginInfo(city_and_state="Chicago",
+                                latitude='38.4772', longitude='-77.9935')
+        db.session.add(origin)
+        db.session.commit()
+        return origin
+    
+
     def mock_station(self):
-        return {
-            0: ['Culpeper Amtrak', 38.4722, -77.9935]
-        }
+        return [
+             {
+                "name": "Culpeper Amtrak",
+                "latitude": 38.4772,
+                "longitude": -77.9935
+            }
+        ]
     
     def mock_directions(self):
         return [
@@ -45,16 +57,16 @@ class RideFinderTestCase(TestCase):
     
 
     def mock_route_information(self):
-        return {
-            0: [
+        return [
+             [
                 '2021-08-22 @ 19:52PM',
                 'regionalTrain',
                 'Crescent',
-                'Chicago Union Station',
-                'Chicago Union Station',
+                'Chicago',
+                'Chicago',
                 'https://www.amtrak.com'
             ]
-        }
+        ]
     
 
     def remove_from_db(self, db_item):
@@ -179,6 +191,7 @@ class RideFinderTestCase(TestCase):
         # Test the template itself through a dummy app
         app2 = create_app()
         route_information = self.mock_route_information()
+        origin = self.create_origin_object()
         names = ['Chicago Union Station']
 
         @app2.route('/stations/0/routes')
@@ -194,6 +207,8 @@ class RideFinderTestCase(TestCase):
             resp2 = client.get('/stations/9/routes', follow_redirects=True)
             self.assertEqual(resp2.status_code, 200)
             self.assertIn("Login", resp2.get_data(as_text=True))
+        
+        self.remove_from_db(origin)
     
 
     def test_check_email_exists_route(self):
@@ -206,6 +221,9 @@ class RideFinderTestCase(TestCase):
     
 
     def test_enter_new_password_route(self):
+        """
+        Test to make sure the "reset password" route renders correctly.
+        """
         with app.test_client() as client:
             resp = client.get('/reset')
             self.assertEqual(resp.status_code, 200)

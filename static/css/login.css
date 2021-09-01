@@ -79,7 +79,6 @@ label {
 }
 
 @media screen and (max-width: 900px) {
-    
     main {
         flex-direction: column;
     }
@@ -93,7 +92,7 @@ label {
 
     .login {
         padding: 10px;
-        width: 100%;
+        width: auto;
     }
 
     form {

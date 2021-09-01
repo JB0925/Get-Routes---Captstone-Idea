@@ -7,11 +7,13 @@ from dateutil.parser import parse
 from decouple import config
 import googlemaps
 
+from models import db, Search, RouteData, OriginInfo, User
+
 
 KEY = config('HERE_API_KEY')
 STATIONS_URL = 'https://transit.hereapi.com/v8/departures'
 GEOCODE_URL = 'https://geocoder.ls.hereapi.com/6.2/geocode.json?apiKey={key}&searchtext={search}'
-GMAPS = googlemaps.Client(key=config('API_KEY'))
+GMAPS = googlemaps.Client(key=config('GOOGLE_API_KEY'))
 
 def create_search_string_for_station_search(city: str, state: str, street_address: str = None) -> str:
     """
@@ -49,11 +51,7 @@ def _get_routes_and_stations(latitude: float, longitude: float) -> Dict:
         return
     params = {"apikey": KEY, "in": f"{latitude},{longitude}"}
     response = requests.get(STATIONS_URL, params=params)
-    
-    try:
-        return response.json()['boards']
-    except IndexError:
-        return None
+    return response.json().get('boards')
 
 
 def prettify_time(time: str) -> str:
@@ -80,7 +78,9 @@ def determine_long_form_route_name(route: Dict) -> str:
     Method used to abstract some of the complexity out
     of the function below, 'collect_route_information.
     returns a string that is used to store in a dictionary
-    that will be sent client side.
+    that will be sent client side. Gets the most descriptive
+    name of the route, which will then be passed to
+    get_lat_and_lng.
     """
     long_form_name = route.get('longName')
     if not long_form_name:
@@ -104,15 +104,15 @@ def collect_route_information(data: List) -> Dict:
 
     try:
         for item in data:
+            temp = []
             for route in item['departures']:
                 route_ = route['transport']
                 long_name = determine_long_form_route_name(route_)
-                temp = []
                 time = prettify_time(route['time'])
                 route_data = [time, route_['mode'], route_['name'], 
                                 route_['headsign'], long_name, route['agency']['website']]
-                temp.extend(route_data)
-                result[i].append(temp)
+                temp.append(route_data)
+            result[i].append(temp)
             i += 1
         return result
     except TypeError:
@@ -147,17 +147,17 @@ def get_route_data(address: str) -> Dict:
     return collect_route_information(route_data)
 
 
-def create_correct_destination_coordinates(data: List, address: Dict, origin_coords: Dict) -> Tuple:
+def create_correct_destination_coordinates(data: List, address: str, origin_coords: Dict) -> Tuple:
     """
     A method to generate the correct coordinates (or a close estimation) for a destination
     based on factors such as transportation mode, etc. Accounts for situations in which addresses
     are formed and no coordinates are found by simply returning the origin coordinates.
     """
     transit_types = ['bus', 'subway', 'ferry', 'lightRail']
-    start_coords = (origin_coords['latitude'], origin_coords['longitude'])
+    start_coords = (float(origin_coords['latitude']), float(origin_coords['longitude']))
     if data[1] in transit_types:
-        destination_coords = get_lat_and_long(f'{data[3]} {address["address"]}') or start_coords
-        if abs(destination_coords[0] - origin_coords['latitude']) > 1.5:
+        destination_coords = get_lat_and_long(f'{data[3]} {address}') or start_coords
+        if abs(destination_coords[0] - float(origin_coords['latitude'])) > 1.5:
             return start_coords
         else:
             return destination_coords
@@ -166,11 +166,29 @@ def create_correct_destination_coordinates(data: List, address: Dict, origin_coo
     return train_coords if train_coords else start_coords
 
 
-def get_directions_to_station(start_address, station_address):
+def get_directions_to_station(start_address: str, station_address: str) -> List[str]:
     """
     Method used to get directions from the address the user inputs
     to the station found via the HERE API.
     """
     directions = GMAPS.directions(start_address, station_address)[0]['legs'][0]['steps']
-    pattern = r'(<b>)|(</b>)|(<div>)|(</div>)|(<div[\w\W]+>)'
+    pattern = r'(<b>)|(</b>)|(<div>)|(</div>)|(<div[\w\W]+>)|(<wbr/>)'
     return [re.sub(pattern, '', direction['html_instructions']) for direction in directions]
+
+
+def save_route_data_to_db(routes: List, coords_dict: Dict, user: User, origin: OriginInfo) -> None:
+    route_names = []
+
+    for key in routes:
+        route_names.append(key[2])
+        lat, lng= create_correct_destination_coordinates(key, origin.city_and_state, coords_dict)
+    
+        new_search = Search(time=key[0], transportation_mode=key[1],
+                                destination=key[4], website=key[5], user_id=user.id)
+        new_route = RouteData(time=key[0], name=key[1], mode=key[2], headsign=key[3], 
+                                long_name=key[4], website=key[5], latitude=str(lat), longitude=str(lng))
+        db.session.add(new_search)
+        db.session.add(new_route)
+    db.session.commit()
+    
+    return route_names

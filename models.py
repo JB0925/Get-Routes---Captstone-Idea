@@ -1,3 +1,4 @@
+from os import name
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
@@ -71,3 +72,93 @@ class Search(db.Model):
             "destination": self.destination,
             "website": self.website,
         }
+
+
+class OriginInfo(db.Model):
+    """Table used to gather the data from the search string the user inputs."""
+    __tablename__ = 'origins'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    city_and_state = db.Column(db.String, nullable=False)
+    latitude = db.Column(db.String, nullable=False)
+    longitude = db.Column(db.String, nullable=False)
+
+    
+    @property
+    def serialize(self):
+        return {
+            "address": self.city_and_state,
+            "latitude": float(self.latitude),
+            "longitude": float(self.longitude)
+        }
+
+
+class Station(db.Model):
+    """Table used to gather the data for each station returned by the API."""
+    __tablename__ = 'stations'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String, nullable=False)
+    station_latitude = db.Column(db.String, nullable=False)
+    station_longitude = db.Column(db.String, nullable=False)
+
+
+    @property
+    def serialize(self):
+        return {
+            "name": self.name,
+            "station_latitude": float(self.station_latitude),
+            "station_longitude": float(self.station_longitude)
+        }
+    
+
+    @classmethod
+    def batch_commit(cls, data):
+        for d in data:
+            station = cls(name=data[d][0], station_latitude=str(data[d][1]), station_longitude=str(data[d][2]))
+            db.session.add(station)
+        db.session.commit()
+
+
+class StationDirection(db.Model):
+    """Table used to save all of the directions to the station"""
+    __tablename__ = 'station_directions'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    directions = db.Column(db.Text)
+
+    
+    @classmethod
+    def batch_commit(cls, data):
+        for group in data:
+            temp = ''
+            for direction in group:
+                temp += f'{direction}+'
+            directions = cls(directions=temp)
+            db.session.add(directions)
+        db.session.commit()
+
+
+class RouteData(db.Model):
+    """Table used to save all data for each route."""
+    __tablename__ = 'route_data'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    time = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    mode = db.Column(db.String, nullable=False)
+    headsign = db.Column(db.String, nullable=False)
+    long_name = db.Column(db.String, nullable=False)
+    website = db.Column(db.String, nullable=False)
+    latitude = db.Column(db.String, nullable=False)
+    longitude = db.Column(db.String, nullable=False)
+
+
+    @property
+    def serialize(self):
+        return {
+            "time": self.time,
+            "mode": self.mode,
+            "destination": self.long_name,
+            "website": self.website
+        }
+    

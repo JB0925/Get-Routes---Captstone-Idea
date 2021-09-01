@@ -5,7 +5,7 @@ class MapMaker {
     // the map.
     constructor() {
         this.makeMaps = this.makeMaps.bind(this);
-        this.defer = this.defer.bind(this);
+        // this.defer = this.defer.bind(this);
         this.mapArray = this.mapArray.bind(this);
     }
 
@@ -25,7 +25,7 @@ class MapMaker {
         // Gathers necessary data and uses it to render a map
         // in browser with a point to show the location of the
         // station.
-        let data = await axios.get('http://127.0.0.1:5000/get_stations');
+        let data = await axios.get('https://find-rides.herokuapp.com/get_stations');
         let routes = data.data
         let maps = this.mapArray();
 
@@ -47,18 +47,7 @@ class MapMaker {
             map.addControl(L.mapquest.control());
         });
     }
-    
-    defer(method) {
-        // Recursive method used to check to see if the DOM
-        // is ready for maps to be added. If it isn't, we 
-        // use a setTimeout to recall the method again.
-        if (document.querySelector('#map')) {
-            method();
-        } else {
-            setTimeout(function() {this.defer(method)},500)
-        }
-    };
 }
 
 let loadMaps = new MapMaker()
-loadMaps.defer(loadMaps.makeMaps);
+window.addEventListener('DOMContentLoaded', loadMaps.makeMaps)
