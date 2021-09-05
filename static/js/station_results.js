@@ -54,7 +54,6 @@ class MapMaker {
 // submission and the next page load
 const addLoadingSpinner = (evt) => {
     const routeDiv = evt.target.parentElement.parentElement;
-    const spinnerDiv = document.querySelector('.spinner-div');
     
     routeDiv.innerHTML = 
     `<div class="spinner-div">
@@ -62,6 +61,8 @@ const addLoadingSpinner = (evt) => {
         <p>Loading...</p>
     </div>
     `
+
+    const spinnerDiv = document.querySelector('.spinner-div');
     spinnerDiv.style.display = 'flex';
     spinnerDiv.style.width = '100%';
     spinnerDiv.style.height = '100%';
@@ -70,4 +71,6 @@ const addLoadingSpinner = (evt) => {
 
 let loadMaps = new MapMaker();
 window.addEventListener('DOMContentLoaded', loadMaps.makeMaps);
-document.addEventListener('click', addLoadingSpinner);
+
+const resultsDiv = document.querySelector('.results');
+resultsDiv.addEventListener('click', addLoadingSpinner);
