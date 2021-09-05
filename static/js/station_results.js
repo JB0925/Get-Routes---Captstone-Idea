@@ -54,7 +54,6 @@ class MapMaker {
 // submission and the next page load
 const addLoadingSpinner = (evt) => {
     const routeDiv = evt.target.parentElement.parentElement;
-    console.log(routeDiv.className)
     
     routeDiv.innerHTML = 
     `<div class="spinner-div">
@@ -72,4 +71,6 @@ const addLoadingSpinner = (evt) => {
 
 let loadMaps = new MapMaker();
 window.addEventListener('DOMContentLoaded', loadMaps.makeMaps);
-document.addEventListener('click', addLoadingSpinner);
+
+const resultsDiv = document.querySelector('.results');
+resultsDiv.addEventListener('click', addLoadingSpinner);
