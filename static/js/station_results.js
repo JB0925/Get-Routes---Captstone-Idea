@@ -54,6 +54,7 @@ class MapMaker {
 // submission and the next page load
 const addLoadingSpinner = (evt) => {
     const routeDiv = evt.target.parentElement.parentElement;
+    console.log(routeDiv)
     const spinnerDiv = document.querySelector('.spinner-div');
     
     routeDiv.innerHTML = 
