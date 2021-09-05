@@ -221,6 +221,7 @@ def get_stations():
     origin = OriginInfo.query.all()[-1]
     data = gr._get_routes_and_stations(float(origin.latitude), float(origin.longitude))
     stations = gr.get_station_data(data)
+    stations = [s.serialize for s in Station.query.all()[-len(stations):]]
     return jsonify(stations)
 
 
