@@ -46,8 +46,28 @@ class MapMaker {
     
             map.addControl(L.mapquest.control());
         });
-    }
-}
+    };
+};
 
-let loadMaps = new MapMaker()
-window.addEventListener('DOMContentLoaded', loadMaps.makeMaps)
+
+// Adds a loading spinner in case there is lag between the form
+// submission and the next page load
+const addLoadingSpinner = (evt) => {
+    const routeDiv = evt.target.parentElement.parentElement;
+    const spinnerDiv = document.querySelector('.spinner-div');
+    
+    routeDiv.innerHTML = 
+    `<div class="spinner-div">
+        <i class="fas fa-spinner fa-spin" id="spinner"></i>
+        <p>Loading...</p>
+    </div>
+    `
+    spinnerDiv.style.display = 'flex';
+    spinnerDiv.style.width = '100%';
+    spinnerDiv.style.height = '100%';
+    routeDiv.style.height = '383px';
+};
+
+let loadMaps = new MapMaker();
+window.addEventListener('DOMContentLoaded', loadMaps.makeMaps);
+document.addEventListener('click', addLoadingSpinner);

@@ -6,6 +6,7 @@ const details = document.querySelector('#address-list');
 const formInput = document.querySelector('#street_address');
 const form = document.querySelector('form');
 const bottomSvg = document.querySelector('.bottom');
+const spinner = document.querySelector('.spinner-div');
 
 // set styling if a success or error message appears
 // so as not to push content too far down on page
@@ -67,6 +68,8 @@ const fillInInput = (evt) => {
    details.style.display = 'none';
    bottomSvg.style.bottom = '0';
    form.submit();
+   form.style.display = 'none';
+   spinner.style.display = 'flex';
 }
 
 

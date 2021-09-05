@@ -43,6 +43,10 @@
             {% endfor %}
             <button class="btn" type="submit">Search</button>
         </form>
+        <div class="spinner-div">
+            <i class="fas fa-spinner fa-spin" id="spinner"></i>
+            <p>Loading...</p>
+        </div>
     </div>
     <div class="photos">
         <img src="{{ url_for('static', filename='img/bus_stop.png') }}" alt="Bus Stop">

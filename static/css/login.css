@@ -104,6 +104,25 @@ label {
     transition: bottom 0.1s;
 }
 
+#spinner {
+    font-size: 6rem;
+    color: #042A84;
+}
+
+.spinner-div {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    display: none;
+    width: 70%;
+}
+
+.spinner-div p {
+    color: #042A84;
+    font-size: 2rem;
+    text-align: center;
+}
+
 @media screen and (max-width: 900px) {
     
     main {
