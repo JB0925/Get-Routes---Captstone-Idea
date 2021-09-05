@@ -130,10 +130,6 @@ def search_stations():
     form = RouteSearchForm()
 
     if form.validate_on_submit():
-        # street_address = form.street_address.data
-        # city = form.city.data
-        # state = form.state.data
-        # full_address = gr.create_search_string_for_station_search(city, state, street_address)
         full_address = form.street_address.data
 
         try:

@@ -25,7 +25,6 @@
 }
 
 form {
-    margin-top: -1%;
     align-items: flex-start;
     border-radius: 5px;
     border: 1px solid #042A84;
@@ -33,7 +32,9 @@ form {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    margin-top: -1%;
     padding: 25px;
+    width: 70%;
     z-index: 1;
 }
 
@@ -43,7 +44,7 @@ input {
     height: 30px;
     margin-bottom: 10px;
     padding: 5px;
-    width: 80%;
+    width: 100%;
 }
 
 #street-address {
@@ -94,11 +95,18 @@ label {
     top: 0;
     width: auto;
     background-color: white;
+    width: 50%;
+}
+
+.push-down {
+    bottom: -500px;
+    transition: bottom 0.1s;
 }
 
 @media screen and (max-width: 900px) {
     main {
         flex-direction: column;
+        padding-bottom: 0px;
     }
 
     .photos {
@@ -115,6 +123,7 @@ label {
 
     form {
         align-self: flex-start;
+        width: 100%;
     }
 
     body {

@@ -33,14 +33,6 @@ class RouteSearchForm(FlaskForm):
     street_address = StringField('Enter a Street Address',
                         validators=[DataRequired()],
                         render_kw={'placeholder': 'Ex: 425 East St., Boston, MA'})
-    
-    # city = StringField('Enter Your City',
-    #                     validators=[DataRequired()],
-    #                     render_kw={'placeholder': 'Ex: Boston'})
-    
-    # state = StringField('Enter Your State/Country',
-    #                     validators=[DataRequired()],
-    #                     render_kw={'placeholder': 'Ex: Massachusetts'})
 
 
 class ResetPasswordForm(FlaskForm):
