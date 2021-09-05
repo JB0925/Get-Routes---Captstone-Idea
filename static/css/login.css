@@ -85,17 +85,18 @@ label {
 }
 
 .choice {
-    padding: 10px;
     border-bottom: 1px solid lightgray;
     color: #042A84;
+    cursor: pointer;
+    padding: 10px;
 }
 
 #details {
+    background-color: white;
     position: absolute;
     top: 0;
-    width: auto;
-    background-color: white;
     width: 50%;
+    width: auto;
 }
 
 .push-down {
@@ -104,6 +105,7 @@ label {
 }
 
 @media screen and (max-width: 900px) {
+    
     main {
         flex-direction: column;
         padding-bottom: 0px;
@@ -123,7 +125,11 @@ label {
 
     form {
         align-self: flex-start;
-        width: 100%;
+        width: 75%;
+    }
+
+    #details {
+        width: auto;
     }
 
     body {
