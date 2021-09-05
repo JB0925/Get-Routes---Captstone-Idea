@@ -25,6 +25,7 @@
 }
 
 form {
+    margin-top: -1%;
     align-items: flex-start;
     border-radius: 5px;
     border: 1px solid #042A84;
@@ -43,6 +44,10 @@ input {
     margin-bottom: 10px;
     padding: 5px;
     width: 80%;
+}
+
+#street-address {
+    position: relative;
 }
 
 label {
@@ -76,6 +81,19 @@ label {
 .forgot-pwd {
     color: #042A84;
     margin-top: 5px;
+}
+
+.choice {
+    padding: 10px;
+    border-bottom: 1px solid lightgray;
+    color: #042A84;
+}
+
+#details {
+    position: absolute;
+    top: 0;
+    width: auto;
+    background-color: white;
 }
 
 @media screen and (max-width: 900px) {

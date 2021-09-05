@@ -11,6 +11,7 @@
           crossorigin="anonymous"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <title>Ride Finder - Home</title>
 {% endblock %}
 {% block content %}
@@ -34,6 +35,7 @@
             {% for field in form if field.widget.input_type != 'hidden' %}
                 {{field.label}}
                 {{field}}
+                <div id="address-list"></div>
             
             {% for error in field.errors %}
                 <p class="error">{{ error }}</p>
@@ -45,5 +47,7 @@
     <div class="photos">
         <img src="{{ url_for('static', filename='img/bus_stop.png') }}" alt="Bus Stop">
     </div>
+{% endblock %}
+{% block script %}
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 {% endblock %}

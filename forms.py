@@ -30,17 +30,17 @@ class LoginForm(FlaskForm):
 
 class RouteSearchForm(FlaskForm):
     """The form used to search for routes."""
-    street_address = StringField('Enter a Street Address (Optional)',
-                        validators=[Optional()],
-                        render_kw={'placeholder': 'Ex: 425 W Lake St.'})
-    
-    city = StringField('Enter Your City',
+    street_address = StringField('Enter a Street Address',
                         validators=[DataRequired()],
-                        render_kw={'placeholder': 'Ex: Boston'})
+                        render_kw={'placeholder': 'Ex: 425 East St., Boston, MA'})
     
-    state = StringField('Enter Your State/Country',
-                        validators=[DataRequired()],
-                        render_kw={'placeholder': 'Ex: Massachusetts'})
+    # city = StringField('Enter Your City',
+    #                     validators=[DataRequired()],
+    #                     render_kw={'placeholder': 'Ex: Boston'})
+    
+    # state = StringField('Enter Your State/Country',
+    #                     validators=[DataRequired()],
+    #                     render_kw={'placeholder': 'Ex: Massachusetts'})
 
 
 class ResetPasswordForm(FlaskForm):
