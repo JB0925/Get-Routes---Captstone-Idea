@@ -74,14 +74,9 @@ class GetRouteInfoTestCase(TestCase):
         type of data, given varying addresses?
         """
         addresses = self.mock_addresses()
-        i = 0
         for a in addresses:
             search = gr.create_search_string_for_station_search(**addresses[a])
-            if i == 2:
-                self.assertEqual(gr.get_lat_and_long(search), None)
-            else:
-                self.assertEqual(type(gr.get_lat_and_long(search)), tuple)
-            i += 1
+            self.assertEqual(type(gr.get_lat_and_long(search)), tuple)
     
 
     def test_get_routes_and_stations(self):
