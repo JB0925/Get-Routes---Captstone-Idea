@@ -129,6 +129,9 @@ def search_stations():
     500 meter radius of the address given by the user.
     """
     user = User.query.filter_by(username=session['username']).first()
+    if not user:
+        return redirect(url_for('login'))
+        
     form = RouteSearchForm()
 
     if form.validate_on_submit():
