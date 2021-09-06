@@ -187,10 +187,9 @@ def get_destination_coordinates(address, start_coords):
     try:
         destination_lat2, destination_lng2 = get_lat_and_long(address)
     except Exception:
-        # if we can't get coordinates with the full address, we use only 
-        # the final destination
-        destination_only = address.split(',')[0]
-        destination_lat2, destination_lng2 = get_lat_and_long(destination_only)
+        # if we can't get coordinates with the full address, we return None
+        # and use the fallback method
+        return None
 
     route_url = 'https://transit.router.hereapi.com/v8/routes'
     params = {'apikey': KEY, 'origin': f'{start_lat},{start_lng}', 
@@ -221,8 +220,7 @@ def save_route_data_to_db(routes: List[List[str]], coords_dict: Dict, user: User
         # try to get the coordinates from the HERE api, but if they aren't available,
         # use the fallback method so that the app does not crash
         try:
-            lat, lng = get_destination_coordinates(address, coords_dict) \
-                or get_destination_coordinates(key[4], coords_dict)    
+            lat, lng = get_destination_coordinates(address, coords_dict)  
         
         except (TypeError, AttributeError):
             lat, lng = create_destination_coordinates_fallback(key, origin.city_and_state, coords_dict)
