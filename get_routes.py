@@ -147,11 +147,12 @@ def get_route_data(address: str) -> Dict:
     return collect_route_information(route_data)
 
 
-def create_correct_destination_coordinates(data: List, address: str, origin_coords: Dict) -> Tuple:
+def create_destination_coordinates_fallback(data: List, address: str, origin_coords: Dict) -> Tuple:
     """
     A method to generate the correct coordinates (or a close estimation) for a destination
     based on factors such as transportation mode, etc. Accounts for situations in which addresses
-    are formed and no coordinates are found by simply returning the origin coordinates.
+    are formed and no coordinates are found by simply returning the origin coordinates. This
+    is only to be used in case the API does not return coordinates for the given destination.
     """
     transit_types = ['bus', 'subway', 'ferry', 'lightRail']
     start_coords = (float(origin_coords['latitude']), float(origin_coords['longitude']))
@@ -177,25 +178,54 @@ def get_directions_to_station(start_address: str, station_address: str) -> List[
 
 
 def get_destination_coordinates(address, start_coords):
+    """
+    Gets the most accurate sets of destination coordinates, as the data comes straight
+    from the API. If it cannot find, it we fall back on using Google's Geocoding
+    API to get the destination coordinates. See above.
+    """
     start_lat, start_lng = start_coords["latitude"], start_coords["longitude"]
-    destination_lat2, destination_lng2 = get_lat_and_long(address)
+    try:
+        destination_lat2, destination_lng2 = get_lat_and_long(address)
+    except Exception:
+        # if we can't get coordinates with the full address, we use only 
+        # the final destination
+        destination_only = address.split(',')[0]
+        destination_lat2, destination_lng2 = get_lat_and_long(destination_only)
 
     route_url = 'https://transit.router.hereapi.com/v8/routes'
     params = {'apikey': KEY, 'origin': f'{start_lat},{start_lng}', 
               'destination': f'{destination_lat2},{destination_lng2}'}
 
     resp = requests.get(route_url, params=params).json()
-    final_stop_coords = resp['routes'][0]['sections'][-1]['arrival']['place']['location']
+    try:
+        final_stop_coords = resp['routes'][0]['sections'][-1]['arrival']['place']['location']
+    except IndexError:
+        # if the above throws an error, we catch it, and move on to trying our fallback method
+        return None
+
     return final_stop_coords["lat"], final_stop_coords["lng"]
 
 
-def save_route_data_to_db(routes: List, coords_dict: Dict, user: User, origin: OriginInfo) -> None:
+def save_route_data_to_db(routes: List[List[str]], coords_dict: Dict, user: User, origin: OriginInfo) -> List[str]:
+    """
+    As the function name says, this method collects all the data, bundles it up, 
+    and saves it all to the database. Returns a list of the route names, used in
+    the Jinja template.
+    """
     route_names = []
 
     for key in routes:
         route_names.append(key[2])
-        address = f"{key[4]} {origin.city_and_state}"
-        lat, lng = get_destination_coordinates(address, coords_dict)
+        address = f"{key[4]}, {origin.city_and_state}"
+
+        # try to get the coordinates from the HERE api, but if they aren't available,
+        # use the fallback method so that the app does not crash
+        try:
+            lat, lng = get_destination_coordinates(address, coords_dict) \
+                or get_destination_coordinates(key[4], coords_dict)    
+        
+        except (TypeError, AttributeError):
+            lat, lng = create_destination_coordinates_fallback(key, origin.city_and_state, coords_dict)
     
         new_search = Search(time=key[0], transportation_mode=key[1],
                                 destination=key[4], website=key[5], user_id=user.id)
