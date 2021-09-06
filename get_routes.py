@@ -176,12 +176,26 @@ def get_directions_to_station(start_address: str, station_address: str) -> List[
     return [re.sub(pattern, '', direction['html_instructions']) for direction in directions]
 
 
+def get_destination_coordinates(address, start_coords):
+    start_lat, start_lng = start_coords["latitude"], start_coords["longitude"]
+    destination_lat2, destination_lng2 = get_lat_and_long(address)
+
+    route_url = 'https://transit.router.hereapi.com/v8/routes'
+    params = {'apikey': KEY, 'origin': f'{start_lat},{start_lng}', 
+              'destination': f'{destination_lat2},{destination_lng2}'}
+
+    resp = requests.get(route_url, params=params).json()
+    final_stop_coords = resp['routes'][0]['sections'][-1]['arrival']['place']['location']
+    return final_stop_coords["lat"], final_stop_coords["lng"]
+
+
 def save_route_data_to_db(routes: List, coords_dict: Dict, user: User, origin: OriginInfo) -> None:
     route_names = []
 
     for key in routes:
         route_names.append(key[2])
-        lat, lng= create_correct_destination_coordinates(key, origin.city_and_state, coords_dict)
+        address = f"{key[4]} {origin.city_and_state}"
+        lat, lng = get_destination_coordinates(address, coords_dict)
     
         new_search = Search(time=key[0], transportation_mode=key[1],
                                 destination=key[4], website=key[5], user_id=user.id)
