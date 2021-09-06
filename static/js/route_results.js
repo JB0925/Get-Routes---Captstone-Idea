@@ -9,7 +9,7 @@ class MakeSingleMap {
         // Collects all the data needed to create the map and
         // plot coordinates on it.
         setTimeout(() => {},2000)
-        let data = await axios.get('https://find-rides.herokuapp.com/get_routes')
+        let data = await axios.get('https://find-rides.herokuapp.com/get_routes');
         let routes = data.data;
         let {latitude, longitude} = routes[5];
         let destination_coords = routes.slice(-1)[0]

@@ -19,7 +19,7 @@ class MapMaker {
             document.querySelector('#dark'),
             document.querySelector('#light')
         ];
-    }
+    };
     
     async makeMaps() {
         // Gathers necessary data and uses it to render a map

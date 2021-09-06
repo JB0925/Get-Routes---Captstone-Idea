@@ -1,6 +1,7 @@
 from os import name
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from sqlalchemy.orm import backref
 
 
 db = SQLAlchemy()
@@ -24,6 +25,10 @@ class User(db.Model):
     email = db.Column(db.String, unique=True, nullable=False)
 
     searches = db.relationship('Search', backref='user')
+    origins = db.relationship('OriginInfo', backref='user')
+    stations = db.relationship('Station', backref='user')
+    directions = db.relationship('StationDirection', backref='user')
+    routes = db.relationship('RouteData', backref='user')
 
 
     def __str__(self):
@@ -82,6 +87,7 @@ class OriginInfo(db.Model):
     city_and_state = db.Column(db.String, nullable=False)
     latitude = db.Column(db.String, nullable=False)
     longitude = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
     
     @property
@@ -101,7 +107,7 @@ class Station(db.Model):
     name = db.Column(db.String, nullable=False)
     station_latitude = db.Column(db.String, nullable=False)
     station_longitude = db.Column(db.String, nullable=False)
-
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
     @property
     def serialize(self):
@@ -113,9 +119,9 @@ class Station(db.Model):
     
 
     @classmethod
-    def batch_commit(cls, data):
+    def batch_commit(cls, data, id):
         for d in data:
-            station = cls(name=data[d][0], station_latitude=str(data[d][1]), station_longitude=str(data[d][2]))
+            station = cls(name=data[d][0], station_latitude=str(data[d][1]), station_longitude=str(data[d][2]), user_id=id)
             db.session.add(station)
         db.session.commit()
 
@@ -126,15 +132,16 @@ class StationDirection(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     directions = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
     
     @classmethod
-    def batch_commit(cls, data):
+    def batch_commit(cls, data, id):
         for group in data:
             temp = ''
             for direction in group:
                 temp += f'{direction}+'
-            directions = cls(directions=temp)
+            directions = cls(directions=temp, user_id=id)
             db.session.add(directions)
         db.session.commit()
 
@@ -151,6 +158,7 @@ class RouteData(db.Model):
     website = db.Column(db.String, nullable=False)
     latitude = db.Column(db.String, nullable=False)
     longitude = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
 
     @property
@@ -159,6 +167,8 @@ class RouteData(db.Model):
             "time": self.time,
             "mode": self.mode,
             "destination": self.long_name,
-            "website": self.website
+            "website": self.website,
+            "latitude": self.latitude,
+            "longitude": self.longitude
         }
     

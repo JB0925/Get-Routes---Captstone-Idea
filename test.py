@@ -33,9 +33,17 @@ class RideFinderTestCase(TestCase):
         db.session.rollback()
     
 
+    def create_user(self):
+        user = User(username='joey', password='cookies', email='joey@gmail.com')
+        db.session.add(user)
+        db.session.commit()
+        return User.query.filter_by(username='joey').first()
+    
+
     def create_origin_object(self):
+        user = self.create_user()
         origin = OriginInfo(city_and_state="Chicago",
-                                latitude='38.4772', longitude='-77.9935')
+                                latitude='38.4772', longitude='-77.9935', user_id=user.id)
         db.session.add(origin)
         db.session.commit()
         return origin
@@ -154,7 +162,6 @@ class RideFinderTestCase(TestCase):
         with app.test_client() as client:
             resp = client.post('/', data=dict(username="kim08", password="cookies", email="kim@gmail.com"), follow_redirects=True)
             self.assertEqual(resp.status_code, 200)
-            # self.assertEqual(len(User.query.all()), 1)
     
 
     def test_logout_route(self):

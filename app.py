@@ -73,7 +73,7 @@ def login():
     form = LoginForm()
 
     if request.method == 'GET':
-        if "username" not in session:
+        if not session.get("username"):
             return render_template('login.html', form=form)
         return redirect(url_for('search_stations'))
     
@@ -86,6 +86,7 @@ def login():
             session['username'] = username
             flash('Logged in successfully!')
             return redirect(url_for('search_stations'))
+
     flash('Your account was not found. Please sign up today!')
     return redirect(url_for('signup'))
 
@@ -127,6 +128,7 @@ def search_stations():
     Method used to locate public transit stations within a 
     500 meter radius of the address given by the user.
     """
+    user = User.query.filter_by(username=session['username']).first()
     form = RouteSearchForm()
 
     if form.validate_on_submit():
@@ -137,19 +139,19 @@ def search_stations():
         except TypeError:
             return redirect(url_for('not_found'))
         
-        origin_info = OriginInfo(city_and_state=full_address, latitude=str(lat), longitude=str(lng))
+        origin_info = OriginInfo(city_and_state=full_address, latitude=str(lat), longitude=str(lng), user_id=user.id)
         db.session.add(origin_info)
         db.session.commit()
 
         # gets data about stations and then packages it into an easier to read format
-        station_data = gr._get_routes_and_stations(lat,lng)
-        stations = gr.get_station_data(station_data)
+        all_routes_and_stations = gr._get_routes_and_stations(lat,lng)
+        only_stations = gr.get_station_data(all_routes_and_stations)
         
-        if stations:
-            Station.batch_commit(stations)
-            station_directions = [gr.get_directions_to_station(full_address, f'{stations[i][0]} {full_address}') \
-                                    for i in range(len(stations))]
-            StationDirection.batch_commit(station_directions)
+        if only_stations:
+            Station.batch_commit(only_stations, user.id)
+            station_directions = [gr.get_directions_to_station(full_address, f'{only_stations[i][0]} {full_address}') \
+                                    for i in range(len(only_stations))]
+            StationDirection.batch_commit(station_directions, user.id)
             return redirect(url_for('show_station_results'))
         return redirect(url_for('not_found'))
     
@@ -167,12 +169,16 @@ def show_station_results():
     variable to the template, as well as an array used to
     give each map an id (used in rendering the maps).
     """
-    origin = OriginInfo.query.all()[-1]
+    user = User.query.filter_by(username=session.get('username')).first()
+    if not user:
+        return redirect(url_for('login'))
+    
+    origin = user.origins[-1]
     station_data = gr._get_routes_and_stations(float(origin.latitude),float(origin.longitude))
     stations = gr.get_station_data(station_data)
     length = len(stations)
-    stations = [s.serialize for s in Station.query.all()[-length:]]
-    station_directions = [d.directions.split('+') for d in StationDirection.query.all()[-length:]]
+    stations = [s.serialize for s in user.stations[-length:]]
+    station_directions = [d.directions.split('+') for d in user.directions[-length:]]
     return render_template('station_results.html', routes=stations, directions=station_directions, maps=MAP_ARRAY)
 
 
@@ -184,25 +190,24 @@ def show_route_results(idx):
     that is used to render the maps.
     """
     idx = int(idx)
+    user = User.query.filter_by(username=session.get("username")).first()
+    if not user:
+        return redirect(url_for('login'))
 
     if idx < 0 or idx > 4:
         flash('Sorry, there are not that many available routes!')
         return redirect(url_for('search_stations'))
 
-    origin = OriginInfo.query.all()[-1]
+    origin = user.origins[-1]
     route_information = gr.get_route_data(origin.city_and_state)[idx][0]
     
     # handling GET requests and edge cases.
-    if "username" not in session:
-        return redirect(url_for('signup'))
-    
     if not route_information:
         return redirect(url_for('search_stations'))
     
     origin_lat_and_lng = {"latitude": origin.latitude, "longitude": origin.longitude}
-    user = User.query.filter_by(username=session["username"]).first()
     route_names = gr.save_route_data_to_db(route_information, origin_lat_and_lng, user, origin)
-    available_routes = Search.query.all()[LIMIT:]
+    available_routes = user.searches[LIMIT:]
     return render_template('route_results.html',routes=available_routes, maps=MAP_ARRAY, names=route_names)
 
 
@@ -218,10 +223,15 @@ def get_stations():
     about the stations that will allow maps to 
     be rendered.
     """
-    origin = OriginInfo.query.all()[-1]
+    user = User.query.filter_by(username=session["username"]).first()
+    if not user:
+        return
+
+    origin = user.origins[-1]
     data = gr._get_routes_and_stations(float(origin.latitude), float(origin.longitude))
     stations = gr.get_station_data(data)
-    stations = Station.query.all()[-len(stations):]
+    length = len(stations)
+    stations = user.stations[-length:]
     results = {}
     i = 0
     for item in stations:
@@ -243,10 +253,12 @@ def get_routes():
     also gives the client-side the data that allows
     the maps to be rendered.
     """
-    route_data = RouteData.query.all()[-5:]
-    routes = [r.serialize for r in route_data]
-    route_destination_coords = [(float(r.latitude), float(r.longitude)) for r in route_data]
-    origin = OriginInfo.query.all()[-1]
+    user = User.query.filter_by(username=session["username"]).first()
+
+    routes = [r.serialize for r in user.routes[LIMIT:]]
+    route_destination_coords = [(float(r["latitude"]), float(r["longitude"])) for r in routes]
+    
+    origin = user.origins[-1]
     origin_lat_and_lng = {"latitude": float(origin.latitude), "longitude": float(origin.longitude)}
 
     routes.append(origin_lat_and_lng)

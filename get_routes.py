@@ -186,7 +186,8 @@ def save_route_data_to_db(routes: List, coords_dict: Dict, user: User, origin: O
         new_search = Search(time=key[0], transportation_mode=key[1],
                                 destination=key[4], website=key[5], user_id=user.id)
         new_route = RouteData(time=key[0], name=key[1], mode=key[2], headsign=key[3], 
-                                long_name=key[4], website=key[5], latitude=str(lat), longitude=str(lng))
+                                long_name=key[4], website=key[5], latitude=str(lat), longitude=str(lng),
+                                user_id=user.id)
         db.session.add(new_search)
         db.session.add(new_route)
     db.session.commit()
