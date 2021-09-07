@@ -96,6 +96,7 @@ def logout():
     """Handles logging out a user."""
     if "username" in session:
         session.pop("username")
+        session.pop("num_routes")
     flash('You were successfully logged out!')
     return redirect(url_for('login'))
 
@@ -203,6 +204,8 @@ def show_route_results(idx):
 
     origin = user.origins[-1]
     route_information = gr.get_route_data(origin.city_and_state)[idx][0]
+    session['num_routes'] = len(route_information)
+    num_routes = session["num_routes"]
     
     # handling GET requests and edge cases.
     if not route_information:
@@ -210,7 +213,7 @@ def show_route_results(idx):
     
     origin_lat_and_lng = {"latitude": origin.latitude, "longitude": origin.longitude}
     route_names = gr.save_route_data_to_db(route_information, origin_lat_and_lng, user, origin)
-    available_routes = user.searches[LIMIT:]
+    available_routes = user.searches[-num_routes:]
     return render_template('route_results.html',routes=available_routes, maps=MAP_ARRAY, names=route_names)
 
 
@@ -257,8 +260,8 @@ def get_routes():
     the maps to be rendered.
     """
     user = User.query.filter_by(username=session["username"]).first()
-
-    routes = [r.serialize for r in user.routes[LIMIT:]]
+    num_routes = session['num_routes']
+    routes = [r.serialize for r in user.routes[-num_routes:]]
     route_destination_coords = [(float(r["latitude"]), float(r["longitude"])) for r in routes]
     
     origin = user.origins[-1]
