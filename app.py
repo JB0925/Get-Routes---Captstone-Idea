@@ -96,7 +96,8 @@ def logout():
     """Handles logging out a user."""
     if "username" in session:
         session.pop("username")
-        session.pop("num_routes")
+        if session["num_routes"]:
+            session.pop("num_routes")
     flash('You were successfully logged out!')
     return redirect(url_for('login'))
 
