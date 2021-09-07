@@ -109,8 +109,9 @@ def collect_route_information(data: List) -> Dict:
                 route_ = route['transport']
                 long_name = determine_long_form_route_name(route_)
                 time = prettify_time(route['time'])
+                website = route['agency'].get('website', 'None Provided')
                 route_data = [time, route_['mode'], route_['name'], 
-                                route_['headsign'], long_name, route['agency']['website']]
+                                route_['headsign'], long_name, website]
                 temp.append(route_data)
             result[i].append(temp)
             i += 1
