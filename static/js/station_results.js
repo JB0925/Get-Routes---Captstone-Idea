@@ -25,7 +25,6 @@ class MapMaker {
         // Gathers necessary data and uses it to render a map
         // in browser with a point to show the location of the
         // station.
-        setTimeout(() => {},2000)
         let data = await axios.get('https://find-rides.herokuapp.com/get_stations');
         let routes = data.data
         console.log(routes)

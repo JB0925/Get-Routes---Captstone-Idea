@@ -30,8 +30,6 @@ db.create_all()
 # global variables used to send data for client-side requests
 user_email = None
 MAP_ARRAY = ['map', 'hybrid', 'satellite', 'dark', 'light']
-LIMIT = -5
-
 
 
 """
@@ -94,10 +92,11 @@ def login():
 @app.route('/logout')
 def logout():
     """Handles logging out a user."""
-    if "username" in session:
-        session.pop("username")
-        if session["num_routes"]:
-            session.pop("num_routes")
+    session_keys = "username num_routes num_stations".split()
+    for key in session_keys:
+        if session.get(key):
+            session.pop(key)
+        
     flash('You were successfully logged out!')
     return redirect(url_for('login'))
 
@@ -181,7 +180,8 @@ def show_station_results():
     origin = user.origins[-1]
     station_data = gr._get_routes_and_stations(float(origin.latitude),float(origin.longitude))
     stations = gr.get_station_data(station_data)
-    length = len(stations)
+    session["num_stations"] = len(stations)
+    length = session["num_stations"]
     stations = [s.serialize for s in user.stations[-length:]]
     station_directions = [d.directions.split('+') for d in user.directions[-length:]]
     return render_template('station_results.html', routes=stations, directions=station_directions, maps=MAP_ARRAY)
@@ -234,10 +234,7 @@ def get_stations():
     if not user:
         return
 
-    origin = user.origins[-1]
-    data = gr._get_routes_and_stations(float(origin.latitude), float(origin.longitude))
-    stations = gr.get_station_data(data)
-    length = len(stations)
+    length = session["num_stations"]
     stations = user.stations[-length:]
     results = {}
     i = 0
@@ -262,8 +259,8 @@ def get_routes():
     """
     user = User.query.filter_by(username=session["username"]).first()
     num_routes = session['num_routes']
-    routes = [r.serialize for r in user.routes[-num_routes:]]
-    route_destination_coords = [(float(r["latitude"]), float(r["longitude"])) for r in routes]
+    routes = [[r.serialize for r in user.routes[-num_routes:]]]
+    route_destination_coords = [(float(r["latitude"]), float(r["longitude"])) for item in routes for r in item]
     
     origin = user.origins[-1]
     origin_lat_and_lng = {"latitude": float(origin.latitude), "longitude": float(origin.longitude)}
