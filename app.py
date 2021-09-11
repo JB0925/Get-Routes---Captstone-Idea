@@ -231,10 +231,10 @@ def get_stations():
     be rendered.
     """
     user = User.query.filter_by(username=session.get("username")).first()
-    if not user:
-        return
+    length = session.get("num_stations")
 
-    length = session["num_stations"]
+    if not user or not length:
+        return jsonify({"Error": "Could not complete request. Please log in or sign up."})
     stations = user.stations[-length:]
     results = {}
     i = 0
@@ -258,7 +258,9 @@ def get_routes():
     the maps to be rendered.
     """
     user = User.query.filter_by(username=session.get("username")).first()
-    num_routes = session['num_routes']
+    num_routes = session.get('num_routes')
+    if not user or not num_routes:
+        return jsonify({"Error": "Could not complete request. Please log in or sign up."})
     routes = [[r.serialize for r in user.routes[-num_routes:]]]
     route_destination_coords = [(float(r["latitude"]), float(r["longitude"])) for item in routes for r in item]
     
