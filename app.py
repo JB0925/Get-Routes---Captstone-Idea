@@ -129,7 +129,7 @@ def search_stations():
     Method used to locate public transit stations within a 
     500 meter radius of the address given by the user.
     """
-    user = User.query.filter_by(username=session['username']).first()
+    user = User.query.filter_by(username=session.get('username')).first()
     if not user:
         return redirect(url_for('login'))
         
@@ -230,7 +230,7 @@ def get_stations():
     about the stations that will allow maps to 
     be rendered.
     """
-    user = User.query.filter_by(username=session["username"]).first()
+    user = User.query.filter_by(username=session.get("username")).first()
     if not user:
         return
 
@@ -257,7 +257,7 @@ def get_routes():
     also gives the client-side the data that allows
     the maps to be rendered.
     """
-    user = User.query.filter_by(username=session["username"]).first()
+    user = User.query.filter_by(username=session.get("username")).first()
     num_routes = session['num_routes']
     routes = [[r.serialize for r in user.routes[-num_routes:]]]
     route_destination_coords = [(float(r["latitude"]), float(r["longitude"])) for item in routes for r in item]
