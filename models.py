@@ -1,7 +1,7 @@
 from os import name
-from flask_sqlalchemy import SQLAlchemy
-from flask_bcrypt import Bcrypt
-from sqlalchemy.orm import backref
+from flask_sqlalchemy import SQLAlchemy # type: ignore
+from flask_bcrypt import Bcrypt # type: ignore
+from sqlalchemy.orm import backref # type: ignore
 
 
 db = SQLAlchemy()

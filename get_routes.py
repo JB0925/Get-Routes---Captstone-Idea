@@ -2,10 +2,10 @@ import re
 from collections import defaultdict
 from typing import List, Dict, Optional, Tuple
 
-import requests
-from dateutil.parser import parse
-from decouple import config
-import googlemaps
+import requests # type: ignore
+from dateutil.parser import parse # type: ignore
+from decouple import config # type: ignore
+import googlemaps # type: ignore
 
 from models import db, Search, RouteData, OriginInfo, User
 
