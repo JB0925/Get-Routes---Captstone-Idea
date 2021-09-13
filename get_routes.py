@@ -1,6 +1,6 @@
 import re
 from collections import defaultdict
-from typing import List, Dict, Tuple
+from typing import List, Dict, Optional, Tuple
 
 import requests
 from dateutil.parser import parse
@@ -25,7 +25,7 @@ def create_search_string_for_station_search(city: str, state: str, street_addres
     return f'{street_address} {city} {state}'
 
 
-def get_lat_and_long(search: str) -> Tuple:
+def get_lat_and_long(search: str) -> Optional[Tuple]:
     """
     Determines the longitude and latitude for a given address.
     Address can be as simple as a city and state, or a full
@@ -41,7 +41,7 @@ def get_lat_and_long(search: str) -> Tuple:
         return None
 
 
-def _get_routes_and_stations(latitude: float, longitude: float) -> Dict:
+def _get_routes_and_stations(latitude: float, longitude: float) -> Optional[Dict]:
     """
     Gets route information, including departure times
     and destinations for the given longitude and latitude
@@ -91,7 +91,7 @@ def determine_long_form_route_name(route: Dict) -> str:
     return long_form_name
 
 
-def collect_route_information(data: List) -> Dict:
+def collect_route_information(data: List) -> Optional[Dict]:
     """
     Takes in the pertinent route information such as
     departure time, destination, mode of transportation,
@@ -134,7 +134,7 @@ def get_station_data(data: List) -> Dict:
     return stations
 
 
-def get_route_data(address: str) -> Dict:
+def get_route_data(address: str) -> Optional[Dict]:
     """
     A wrapper to collect the data from the above functions,
     so that only one function is called to get route information.
@@ -178,7 +178,7 @@ def get_directions_to_station(start_address: str, station_address: str) -> List[
     return [re.sub(pattern, '', direction['html_instructions']) for direction in directions]
 
 
-def get_destination_coordinates(address, start_coords):
+def get_destination_coordinates(address: str, start_coords: Dict) -> Optional[Dict]:
     """
     Gets the most accurate sets of destination coordinates, as the data comes straight
     from the API. If it cannot find, it we fall back on using Google's Geocoding
