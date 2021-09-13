@@ -41,14 +41,14 @@ def get_lat_and_long(search: str) -> Optional[Tuple]:
         return None
 
 
-def _get_routes_and_stations(latitude: float, longitude: float) -> Optional[Dict]:
+def _get_routes_and_stations(latitude: float, longitude: float) -> Optional[List]:
     """
     Gets route information, including departure times
     and destinations for the given longitude and latitude
     coordinates.
     """
     if not latitude and not longitude:
-        return
+        return None
     params = {"apikey": KEY, "in": f"{latitude},{longitude}"}
     response = requests.get(STATIONS_URL, params=params)
     return response.json().get('boards')
@@ -60,17 +60,17 @@ def prettify_time(time: str) -> str:
     Then, does some checks to add a zero if the minutes are less
     than ten, and determines whether the time is AM or PM.
     """
-    time = parse(time)
-    minute = time.minute if len(str(time.minute)) == 2 else f'0{time.minute}'
-    hour = time.hour if len(str(time.hour)) == 2 else f'0{time.hour}'
-    month = time.month if len(str(time.month)) == 2 else f'0{time.month}'
-    day = time.day if len(str(time.day)) == 2 else f'0{time.day}'
+    datetime_time = parse(time)
+    minute = datetime_time.minute if len(str(datetime_time.minute)) == 2 else f'0{datetime_time.minute}'
+    hour = datetime_time.hour if len(str(datetime_time.hour)) == 2 else f'0{datetime_time.hour}'
+    month = datetime_time.month if len(str(datetime_time.month)) == 2 else f'0{datetime_time.month}'
+    day = datetime_time.day if len(str(datetime_time.day)) == 2 else f'0{datetime_time.day}'
 
-    if time.minute < 10:
-        pretty_time = f'{time.year}-{month}-{day} @{hour}:{minute}'
+    if datetime_time.minute < 10:
+        pretty_time = f'{datetime_time.year}-{month}-{day} @{hour}:{minute}'
     else:
-        pretty_time = f'{time.year}-{month}-{day} @{hour}:{minute}'
-    return f'{pretty_time} AM' if time.hour < 12 else f'{pretty_time} PM'
+        pretty_time = f'{datetime_time.year}-{month}-{day} @{hour}:{minute}'
+    return f'{pretty_time} AM' if datetime_time.hour < 12 else f'{pretty_time} PM'
 
 
 def determine_long_form_route_name(route: Dict) -> str:
@@ -91,7 +91,7 @@ def determine_long_form_route_name(route: Dict) -> str:
     return long_form_name
 
 
-def collect_route_information(data: List) -> Optional[Dict]:
+def collect_route_information(data: Optional[List]) -> Optional[Dict]:
     """
     Takes in the pertinent route information such as
     departure time, destination, mode of transportation,
@@ -101,6 +101,8 @@ def collect_route_information(data: List) -> Optional[Dict]:
     """
     result = defaultdict(list)
     i = 0
+    if data is None:
+        return None
 
     try:
         for item in data:
@@ -140,7 +142,7 @@ def get_route_data(address: str) -> Optional[Dict]:
     so that only one function is called to get route information.
     """
     try:
-        lat, long = get_lat_and_long(address)
+        lat, long = get_lat_and_long(address) # type: ignore
     except TypeError:
         return None
     
@@ -186,7 +188,7 @@ def get_destination_coordinates(address: str, start_coords: Dict) -> Optional[Di
     """
     start_lat, start_lng = start_coords["latitude"], start_coords["longitude"]
     try:
-        destination_lat2, destination_lng2 = get_lat_and_long(address)
+        destination_lat2, destination_lng2 = get_lat_and_long(address) #type: ignore
     except Exception:
         # if we can't get coordinates with the full address, we return None
         # and use the fallback method
@@ -203,7 +205,7 @@ def get_destination_coordinates(address: str, start_coords: Dict) -> Optional[Di
         # if the above throws an error, we catch it, and move on to trying our fallback method
         return None
 
-    return final_stop_coords["lat"], final_stop_coords["lng"]
+    return final_stop_coords["lat"], final_stop_coords["lng"] #type: ignore
 
 
 def save_route_data_to_db(routes: List[List[str]], coords_dict: Dict, user: User, origin: OriginInfo) -> List[str]:
@@ -221,7 +223,7 @@ def save_route_data_to_db(routes: List[List[str]], coords_dict: Dict, user: User
         # try to get the coordinates from the HERE api, but if they aren't available,
         # use the fallback method so that the app does not crash
         try:
-            lat, lng = get_destination_coordinates(address, coords_dict)  
+            lat, lng = get_destination_coordinates(address, coords_dict)  # type: ignore
         
         except (TypeError, AttributeError):
             lat, lng = create_destination_coordinates_fallback(key, origin.city_and_state, coords_dict)

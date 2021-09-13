@@ -14,7 +14,7 @@ def connect_db(app):
     db.init_app(app)
 
 
-class User(db.Model):
+class User(db.Model): #type: ignore
     """Model class used to store information about
        users who register to use the app."""
     __tablename__ = 'users'
@@ -55,7 +55,7 @@ class User(db.Model):
         return False
 
 
-class Search(db.Model):
+class Search(db.Model): #type: ignore
     """Model that saves information from previous searches that users made."""
     __tablename__ = 'searches'
 
@@ -79,7 +79,7 @@ class Search(db.Model):
         }
 
 
-class OriginInfo(db.Model):
+class OriginInfo(db.Model): #type: ignore
     """Table used to gather the data from the search string the user inputs."""
     __tablename__ = 'origins'
 
@@ -99,7 +99,7 @@ class OriginInfo(db.Model):
         }
 
 
-class Station(db.Model):
+class Station(db.Model): #type: ignore
     """Table used to gather the data for each station returned by the API."""
     __tablename__ = 'stations'
 
@@ -126,7 +126,7 @@ class Station(db.Model):
         db.session.commit()
 
 
-class StationDirection(db.Model):
+class StationDirection(db.Model): #type: ignore
     """Table used to save all of the directions to the station"""
     __tablename__ = 'station_directions'
 
@@ -146,7 +146,7 @@ class StationDirection(db.Model):
         db.session.commit()
 
 
-class RouteData(db.Model):
+class RouteData(db.Model): #type: ignore
     """Table used to save all data for each route."""
     __tablename__ = 'route_data'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
