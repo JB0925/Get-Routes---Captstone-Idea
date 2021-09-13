@@ -145,8 +145,8 @@ class GetRouteInfoTestCase(TestCase):
         data2 = ['Boston', 'regionalTrain', 'Crescent', 'Boston South Station']
         address2 = 'Culpeper, VA'
         origin_coords2 = {'latitude': 38.156, 'longitude': -77.25}
-        lat, lng = gr.create_correct_destination_coordinates(data, address, origin_coords)
-        lat2, lng2 = gr.create_correct_destination_coordinates(data2, address2, origin_coords2)
+        lat, lng = gr.get_destination_coordinates(address, origin_coords)
+        lat2, lng2 = gr.create_destination_coordinates_fallback(data2, address2, origin_coords2)
         self.assertTrue(abs(origin_coords['latitude'] - lat) <= 1.5)
         self.assertTrue(abs(origin_coords['longitude'] - lng) <= 1.5)
         self.assertTrue(abs(origin_coords2['latitude'] - lat2) >= 1.5)
