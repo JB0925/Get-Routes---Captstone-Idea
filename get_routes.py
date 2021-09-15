@@ -83,12 +83,13 @@ def determine_long_form_route_name(route: Dict) -> str:
     get_lat_and_lng.
     """
     long_form_name = route.get('longName')
+    headsign = route['headsign'].replace("To", "")
     if not long_form_name:
-        return route['headsign']
+        return headsign
     
     if long_form_name == route['name']:
-        return route['headsign']
-    return long_form_name
+        return headsign
+    return long_form_name.replace("To", "")
 
 
 def collect_route_information(data: Optional[List]) -> Optional[Dict]:
