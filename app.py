@@ -66,7 +66,9 @@ def login():
     Method used to render the login page and login
     an existing user.
     """
-    
+    if session.get("email"):
+        session.pop("email")
+
     form = LoginForm()
 
     if request.method == 'GET':
@@ -293,7 +295,7 @@ def check_email():
     
     if form.validate_on_submit():
         user_email = form.email.data
-        session["email"] = user_email
+        session["email"] = form.email.data
         user = User.query.filter_by(email=user_email).first()
         if user:
             msg = f"Thank you for contacting Ride Finder.\
@@ -315,19 +317,19 @@ def reset_password():
     that was emailed to them. Then, they will also enter a 
     new password, which will then be updated in the database.
     """
-    if not session.get("email"):
-        return redirect(url_for("login"))
-
+    
     dummy_pw = config('TEMP_PW')
     form = ResetPasswordForm()
     
     if form.validate_on_submit():
         temp_pw = form.temp_password.data
         if temp_pw == dummy_pw:
-            user_email = session.get("email")
             bcrypt = Bcrypt()
+            if len(form.new_password.data) < 8:
+                flash("Your password must be eight characters long.")
+                return redirect(url_for("reset_password"))
             new_hashed_pw = bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
-            user = User.query.filter_by(email=user_email).first()
+            user = User.query.filter_by(email=session.get("email")).first()
             user.password = new_hashed_pw
             db.session.add(user)
             db.session.commit()
@@ -335,8 +337,6 @@ def reset_password():
         else:
             flash('Sorry, the temporary password you entered was incorrect. Please request another email to reset it.')
         
-        session.pop("email")
         return redirect(url_for('login'))
     
-    session.pop("email")
     return render_template('reset.html', form=form)

@@ -15,9 +15,17 @@
 {% endblock %}
 {% block content %}
     <div class="login">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <p class="error">{{ msg }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <h2>Reset your password.</h2>
         <p>An email has been sent to the address associated with your account.
-            Please input the temporary password, then create a permanent one.
+            Please input the temporary password, then create a permanent one
+            that is at least eight characters long.
         </p>
         <form action="/reset" method="POST">
             {{ form.hidden_tag() }}
