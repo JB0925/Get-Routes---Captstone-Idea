@@ -28,7 +28,6 @@ connect_db(app)
 db.create_all()
 
 # global variables used to send data for client-side requests
-user_email = None
 MAP_ARRAY = ['map', 'hybrid', 'satellite', 'dark', 'light']
 
 
@@ -293,9 +292,9 @@ def check_email():
     dummy_pw = config('TEMP_PW')
     
     if form.validate_on_submit():
-        global user_email
         user_email = form.email.data
-        user = User.query.filter_by(email=form.email.data).first()
+        session["email"] = user_email
+        user = User.query.filter_by(email=user_email).first()
         if user:
             msg = f"Thank you for contacting Ride Finder.\
                 Your temporary password is {dummy_pw}.\
@@ -316,13 +315,16 @@ def reset_password():
     that was emailed to them. Then, they will also enter a 
     new password, which will then be updated in the database.
     """
+    if not session.get("email"):
+        return redirect(url_for("login"))
+
     dummy_pw = config('TEMP_PW')
     form = ResetPasswordForm()
     
     if form.validate_on_submit():
         temp_pw = form.temp_password.data
         if temp_pw == dummy_pw:
-            global user_email
+            user_email = session.get("email")
             bcrypt = Bcrypt()
             new_hashed_pw = bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
             user = User.query.filter_by(email=user_email).first()
@@ -332,6 +334,9 @@ def reset_password():
             flash('Your password was successfully reset!')
         else:
             flash('Sorry, the temporary password you entered was incorrect. Please request another email to reset it.')
+        
+        session.pop("email")
         return redirect(url_for('login'))
     
+    session.pop("email")
     return render_template('reset.html', form=form)
