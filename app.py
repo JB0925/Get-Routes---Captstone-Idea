@@ -93,11 +93,11 @@ def login():
 @app.route('/logout')
 def logout():
     """Handles logging out a user."""
-    session_keys = "username num_routes num_stations".split()
+    session_keys = "username num_routes num_stations email".split()
     for key in session_keys:
         if session.get(key):
             session.pop(key)
-        
+
     flash('You were successfully logged out!')
     return redirect(url_for('login'))
 

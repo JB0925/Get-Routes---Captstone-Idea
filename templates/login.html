@@ -18,7 +18,11 @@
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for msg in messages %}
+                    {% if msg == 'You are already logged in on another device.' %}
+                    <p class="error">{{ msg }}</p>
+                    {% else %}
                     <p class="success">{{ msg }}</p>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
         {% endwith %}
