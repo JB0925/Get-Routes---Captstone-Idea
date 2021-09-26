@@ -61,15 +61,13 @@ def prettify_time(time: str) -> str:
     than ten, and determines whether the time is AM or PM.
     """
     datetime_time = parse(time)
-    minute = datetime_time.minute if len(str(datetime_time.minute)) == 2 else f'0{datetime_time.minute}'
-    hour = datetime_time.hour if len(str(datetime_time.hour)) == 2 else f'0{datetime_time.hour}'
-    month = datetime_time.month if len(str(datetime_time.month)) == 2 else f'0{datetime_time.month}'
-    day = datetime_time.day if len(str(datetime_time.day)) == 2 else f'0{datetime_time.day}'
+    parts_of_time = [datetime_time.minute, datetime_time.hour, datetime_time.month, datetime_time.day]
+    
+    for i in range(len(parts_of_time)):
+        parts_of_time[i] = parts_of_time[i] if len(str(parts_of_time[i])) == 2 else f'0{parts_of_time[i]}'
 
-    if datetime_time.minute < 10:
-        pretty_time = f'{datetime_time.year}-{month}-{day} @{hour}:{minute}'
-    else:
-        pretty_time = f'{datetime_time.year}-{month}-{day} @{hour}:{minute}'
+    minute, hour, month, day = parts_of_time
+    pretty_time = f'{datetime_time.year}-{month}-{day} @{hour}:{minute}'
     return f'{pretty_time} AM' if datetime_time.hour < 12 else f'{pretty_time} PM'
 
 
@@ -87,9 +85,8 @@ def determine_long_form_route_name(route: Dict) -> str:
     if not long_form_name:
         return headsign
     
-    if long_form_name == route['name']:
-        return headsign
-    return long_form_name.replace("To", "")
+    long_form_name = long_form_name.replace("To", "")
+    return headsign if long_form_name == route['name'] else long_form_name
 
 
 def collect_route_information(data: Optional[List]) -> Optional[Dict]:
@@ -160,14 +157,17 @@ def create_destination_coordinates_fallback(data: List, address: str, origin_coo
     """
     transit_types = ['bus', 'subway', 'ferry', 'lightRail']
     start_coords = (float(origin_coords['latitude']), float(origin_coords['longitude']))
-    if data[1] in transit_types:
-        destination_coords = get_lat_and_long(f'{data[3]} {address}') or start_coords
+    transit_method = data[1]
+    destination_place_name = data[3]
+
+    if transit_method in transit_types:
+        destination_coords = get_lat_and_long(f'{destination_place_name} {address}') or start_coords
         if abs(destination_coords[0] - float(origin_coords['latitude'])) > 1.5:
             return start_coords
         else:
             return destination_coords
     
-    train_coords = get_lat_and_long(data[3])
+    train_coords = get_lat_and_long(destination_place_name)
     return train_coords if train_coords else start_coords
 
 
@@ -217,9 +217,9 @@ def save_route_data_to_db(routes: List[List[str]], coords_dict: Dict, user: User
     """
     route_names = []
 
-    for key in routes:
-        route_names.append(key[2])
-        address = f"{key[4]}, {origin.city_and_state}"
+    for route in routes:
+        route_names.append(route[2])
+        address = f"{route[4]}, {origin.city_and_state}"
 
         # try to get the coordinates from the HERE api, but if they aren't available,
         # use the fallback method so that the app does not crash
@@ -227,12 +227,12 @@ def save_route_data_to_db(routes: List[List[str]], coords_dict: Dict, user: User
             lat, lng = get_destination_coordinates(address, coords_dict)  # type: ignore
         
         except (TypeError, AttributeError):
-            lat, lng = create_destination_coordinates_fallback(key, origin.city_and_state, coords_dict)
+            lat, lng = create_destination_coordinates_fallback(route, origin.city_and_state, coords_dict)
     
-        new_search = Search(time=key[0], transportation_mode=key[1],
-                                destination=key[4], website=key[5], user_id=user.id)
-        new_route = RouteData(time=key[0], name=key[1], mode=key[2], headsign=key[3], 
-                                long_name=key[4], website=key[5], latitude=str(lat), longitude=str(lng),
+        new_search = Search(time=route[0], transportation_mode=route[1],
+                                destination=route[4], website=route[5], user_id=user.id)
+        new_route = RouteData(time=route[0], name=route[1], mode=route[2], headsign=route[3], 
+                                long_name=route[4], website=route[5], latitude=str(lat), longitude=str(lng),
                                 user_id=user.id)
         db.session.add(new_search)
         db.session.add(new_route)
