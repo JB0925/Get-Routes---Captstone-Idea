@@ -26,8 +26,7 @@ class MapMaker {
         // in browser with a point to show the location of the
         // station.
         let data = await axios.get('https://find-rides.herokuapp.com/get_stations');
-        let routes = data.data
-        console.log(routes)
+        let routes = data.data;
         let maps = this.mapArray();
 
         maps.forEach((m, idx) => {
