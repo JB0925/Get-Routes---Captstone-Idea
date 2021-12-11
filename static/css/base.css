@@ -118,7 +118,7 @@ main {
     flex-direction: column;
     height: 0px;
     justify-content: center;
-    transition: height 1s ease-in-out;
+    transition: height .3s ease-in-out;
 }
 
 .pulldown a {
