@@ -85,9 +85,11 @@ async function makeAutoComplete() {
            query: formInput.value
        }
    }
-   let res = await axios.get('https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json', config);
-   let [...places] = res.data.suggestions
-   getDetails(places);
+   if (formInput.value) {
+     let res = await axios.get('https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json', config);
+     let [...places] = res.data.suggestions
+     getDetails(places);
+   }
    
 }
 
